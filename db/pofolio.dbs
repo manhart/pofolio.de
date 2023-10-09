@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="pofolio" id="Project-1510" database="MariaDb" >
+	<schema name="pofolio" >
+		<table name="Company" >
+			<column name="idStock" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
+			<column name="companyName" type="VARCHAR" length="100" jt="12" />
+			<column name="address" type="VARCHAR" length="100" jt="12" />
+			<column name="zip" type="VARCHAR" length="10" jt="12" />
+			<column name="city" type="VARCHAR" length="64" jt="12" />
+			<column name="state" type="VARCHAR" length="64" jt="12" />
+			<column name="phone" type="VARCHAR" length="32" jt="12" />
+			<column name="website" type="VARCHAR" length="200" jt="12" />
+			<column name="description" type="TEXT" jt="-1" />
+			<column name="ceo" type="VARCHAR" length="100" jt="12" />
+			<column name="fullTimeEmployees" type="INT" jt="4" />
+			<column name="image" type="VARCHAR" length="1024" jt="12" />
+			<column name="fiscalYearEndDay" type="TINYINT" jt="-6" />
+			<column name="fiscalYearEndMonth" type="TINYINT" jt="-6" />
+			<column name="registrantName" type="VARCHAR" length="100" jt="12" />
+			<column name="taxIdentificationNumber" type="VARCHAR" length="32" jt="12" />
+			<column name="stateLocation" type="VARCHAR" length="2" jt="12" />
+			<column name="stateOfIncorporation" type="VARCHAR" length="2" jt="12" />
+			<column name="sicCode" type="SMALLINT" jt="5" unsigned="y" />
+			<column name="dcf" type="DECIMAL" length="10" decimal="2" jt="3" unsigned="y" />
+			<index name="pk_Company" unique="PRIMARY_KEY" >
+				<column name="idStock" />
+			</index>
+			<fk name="fk_Company_Stock" to_schema="pofolio" to_table="Stock" >
+				<fk_column name="idStock" pk="idStock" />
+			</fk>
+			<fk name="fk_company_sic" to_schema="pofolio" to_table="SIC" >
+				<fk_column name="sicCode" pk="sicCode" />
+			</fk>
+			<options><![CDATA[engine=InnoDB]]></options>
+		</table>
+		<table name="Country" >
+			<column name="idCountry" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<index name="pk_Country" unique="PRIMARY_KEY" >
+				<column name="idCountry" />
+			</index>
+			<options><![CDATA[engine=InnoDB]]></options>
+		</table>
+		<table name="Currency" >
+			<column name="idCurrency" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="currency" type="CHAR" length="3" jt="1" mandatory="y" >
+				<comment><![CDATA[ISO 4217 Standard]]></comment>
+			</column>
+			<index name="pk_Currency" unique="PRIMARY_KEY" >
+				<column name="idCurrency" />
+			</index>
+			<index name="ui_Currency" unique="UNIQUE_KEY" >
+				<column name="currency" />
+			</index>
+			<options><![CDATA[engine=InnoDB]]></options>
+		</table>
+		<table name="Dividend" >
+			<column name="idDividend" type="BIGINT" jt="-5" mandatory="y" unsigned="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="idStock" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
+			<column name="date" type="DATE" jt="91" mandatory="y" />
+			<column name="adjDividend" type="DECIMAL" length="17" decimal="10" jt="3" mandatory="y" unsigned="y" />
+			<column name="dividend" type="DECIMAL" length="17" decimal="10" jt="3" mandatory="y" unsigned="y" />
+			<column name="recordDate" type="DATE" jt="91" />
+			<column name="paymentDate" type="DATE" jt="91" />
+			<column name="declarationDate" type="DATE" jt="91" />
+			<column name="updated" type="DATETIME" jt="93" >
+				<column_options><![CDATA[ON UPDATE CURRENT_TIMESTAMP]]></column_options>
+			</column>
+			<column name="created" type="DATETIME" jt="93" mandatory="y" >
+				<defo><![CDATA[current_timestamp()]]></defo>
+			</column>
+			<index name="pk_Dividend" unique="PRIMARY_KEY" >
+				<column name="idDividend" />
+			</index>
+			<index name="ui_Dividend_date" unique="UNIQUE_KEY" >
+				<column name="idStock" />
+				<column name="date" options="DESC" />
+			</index>
+			<fk name="fk_dividend_stock" to_schema="pofolio" to_table="Stock" >
+				<fk_column name="idStock" pk="idStock" />
+			</fk>
+			<options><![CDATA[engine=InnoDB]]></options>
+		</table>
+		<table name="Exchange" prior="table" >
+			<column name="idExchange" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="exchange" prior="exhange" type="VARCHAR" length="255" jt="12" />
+			<column name="exchangeShortName" type="VARCHAR" length="10" jt="12" mandatory="y" />
+			<index name="pk_Exchange" unique="PRIMARY_KEY" >
+				<column name="idExchange" />
+			</index>
+			<index name="ui_Exchange_exchangeShortName" unique="UNIQUE_KEY" >
+				<column name="exchangeShortName" options="ASC" />
+			</index>
+			<options><![CDATA[engine=InnoDB]]></options>
+		</table>
+		<table name="HistoricalPrice" >
+			<column name="idHistoricalPrice" type="BIGINT" jt="-5" mandatory="y" unsigned="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="idStock" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
+			<column name="date" type="DATE" jt="91" mandatory="y" />
+			<column name="open" type="DECIMAL" length="10" decimal="2" jt="3" mandatory="y" unsigned="y" />
+			<column name="high" type="DECIMAL" length="10" decimal="2" jt="3" mandatory="y" unsigned="y" />
+			<column name="low" type="DECIMAL" length="10" decimal="2" jt="3" mandatory="y" unsigned="y" />
+			<column name="close" type="DECIMAL" length="10" decimal="2" jt="3" mandatory="y" unsigned="y" />
+			<column name="adjClose" type="DECIMAL" length="10" decimal="2" jt="3" mandatory="y" unsigned="y" />
+			<column name="volume" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
+			<column name="unadjustedVolume" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
+			<column name="change" type="DECIMAL" length="10" decimal="2" jt="3" mandatory="y" />
+			<column name="changePercent" type="DECIMAL" length="10" decimal="7" jt="3" mandatory="y" />
+			<column name="vwap" type="DECIMAL" length="10" decimal="2" jt="3" mandatory="y" unsigned="y" />
+			<column name="changeOverTime" type="DECIMAL" length="17" decimal="10" jt="3" mandatory="y" />
+			<column name="updated" type="DATETIME" jt="93" >
+				<column_options><![CDATA[ON UPDATE CURRENT_TIMESTAMP]]></column_options>
+			</column>
+			<column name="created" type="DATETIME" jt="93" mandatory="y" >
+				<defo><![CDATA[current_timestamp()]]></defo>
+			</column>
+			<index name="pk_HistoricalPrice" unique="PRIMARY_KEY" >
+				<column name="idHistoricalPrice" />
+			</index>
+			<index name="ui_HistoricalPrice" unique="UNIQUE_KEY" >
+				<column name="idStock" />
+				<column name="date" options="DESC" />
+			</index>
+			<fk name="fk_historicalprice_stock" to_schema="pofolio" to_table="Stock" >
+				<fk_column name="idStock" pk="idStock" />
+			</fk>
+			<options><![CDATA[engine=InnoDB]]></options>
+		</table>
+		<table name="Industry" >
+			<column name="idIndustry" type="MEDIUMINT" jt="4" mandatory="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="industry" type="VARCHAR" length="64" jt="12" mandatory="y" />
+			<index name="pk_Industry" unique="PRIMARY_KEY" >
+				<column name="idIndustry" />
+			</index>
+			<index name="ui_Industry_industry" unique="UNIQUE_KEY" >
+				<column name="industry" options="ASC" />
+			</index>
+			<options><![CDATA[engine=InnoDB]]></options>
+		</table>
+		<table name="Language" >
+			<column name="idLanguage" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="code" type="VARCHAR" length="4" jt="12" mandatory="y" />
+			<column name="language" type="VARCHAR" length="45" jt="12" />
+			<index name="pk_Language" unique="PRIMARY_KEY" >
+				<column name="idLanguage" />
+			</index>
+			<options><![CDATA[engine=InnoDB]]></options>
+		</table>
+		<table name="Locales" >
+			<column name="idLocales" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="idLanguage" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" />
+			<column name="idCountry" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" />
+			<column name="locales" type="VARCHAR" length="15" jt="12" />
+			<index name="pk_Locales" unique="PRIMARY_KEY" >
+				<column name="idLocales" />
+			</index>
+			<options><![CDATA[engine=InnoDB]]></options>
+		</table>
+		<table name="PriceTarget" >
+			<column name="idPriceTarget" type="BIGINT" jt="-5" mandatory="y" unsigned="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="idStock" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
+			<column name="publishedDate" type="DATETIME" jt="93" mandatory="y" />
+			<column name="priceTarget" type="DECIMAL" length="10" decimal="2" jt="3" unsigned="y" />
+			<column name="adjPriceTarget" type="DECIMAL" length="10" decimal="2" jt="3" unsigned="y" />
+			<column name="priceWhenPosted" type="DECIMAL" length="10" decimal="4" jt="3" />
+			<column name="analystName" type="VARCHAR" length="100" jt="12" />
+			<column name="analystCompany" type="VARCHAR" length="100" jt="12" />
+			<column name="newsPublisher" type="VARCHAR" length="100" jt="12" />
+			<column name="newsBaseURL" prior="newsBaseUrl" type="VARCHAR" length="255" jt="12" />
+			<column name="newsURL" prior="newURL" type="VARCHAR" length="1024" jt="12" />
+			<column name="newsTitle" type="VARCHAR" length="1024" jt="12" mandatory="y" >
+				<defo><![CDATA['']]></defo>
+			</column>
+			<column name="updated" type="DATETIME" jt="93" >
+				<column_options><![CDATA[ON UPDATE CURRENT_TIMESTAMP]]></column_options>
+			</column>
+			<column name="created" type="DATETIME" jt="93" mandatory="y" >
+				<defo><![CDATA[current_timestamp()]]></defo>
+			</column>
+			<index name="pk_PriceTarget" unique="PRIMARY_KEY" >
+				<column name="idPriceTarget" />
+			</index>
+			<index name="ui_PriceTarget_publishedDate" unique="UNIQUE_KEY" >
+				<column name="idStock" />
+				<column name="publishedDate" options="DESC" />
+			</index>
+			<fk name="fk_pricetarget_stock" to_schema="pofolio" to_table="Stock" >
+				<fk_column name="idStock" pk="idStock" />
+			</fk>
+			<options><![CDATA[engine=InnoDB]]></options>
+		</table>
+		<table name="SIC" spec="" >
+			<comment><![CDATA[Standard Industrial Classification]]></comment>
+			<column name="sicCode" prior="code" type="SMALLINT" jt="5" mandatory="y" unsigned="y" />
+			<column name="sicGroup" prior="group" type="VARCHAR" length="100" jt="12" />
+			<column name="sicDescription" prior="description" type="VARCHAR" length="1024" jt="12" />
+			<index name="pk_SIC" unique="PRIMARY_KEY" >
+				<column name="sicCode" />
+			</index>
+			<options><![CDATA[engine=InnoDB]]></options>
+		</table>
+		<table name="Sector" >
+			<column name="idSector" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="sector" type="VARCHAR" length="64" jt="12" mandatory="y" />
+			<index name="pk_Sector" unique="PRIMARY_KEY" >
+				<column name="idSector" />
+			</index>
+			<index name="ui_Sector_sector" unique="UNIQUE_KEY" >
+				<column name="sector" options="ASC" />
+			</index>
+			<options><![CDATA[engine=InnoDB]]></options>
+		</table>
+		<table name="ShareFloat" prior="SharesFloat" >
+			<column name="idShareFloat" prior="idSharesFloat" type="BIGINT" jt="-5" mandatory="y" unsigned="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="idStock" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
+			<column name="date" type="DATETIME" jt="93" mandatory="y" />
+			<column name="freeFloat" type="DECIMAL" length="17" decimal="14" jt="3" />
+			<column name="floatShares" type="BIGINT" jt="-5" unsigned="y" />
+			<column name="outstandingShares" type="BIGINT" jt="-5" unsigned="y" />
+			<column name="source" type="VARCHAR" length="1024" jt="12" />
+			<column name="updated" type="DATETIME" jt="93" >
+				<column_options><![CDATA[ON UPDATE CURRENT_TIMESTAMP]]></column_options>
+			</column>
+			<column name="created" type="DATETIME" jt="93" mandatory="y" >
+				<defo><![CDATA[current_timestamp()]]></defo>
+			</column>
+			<index name="ui_ShareFloat" unique="UNIQUE_KEY" >
+				<column name="idStock" />
+				<column name="date" options="DESC" />
+			</index>
+			<index name="pk_ShareFloat" unique="PRIMARY_KEY" >
+				<column name="idShareFloat" />
+			</index>
+			<fk name="fk_sharesfloat_stock" to_schema="pofolio" to_table="Stock" >
+				<fk_column name="idStock" pk="idStock" />
+			</fk>
+			<options><![CDATA[engine=InnoDB]]></options>
+		</table>
+		<table name="Stock" prior="table" spec="" >
+			<column name="idStock" type="BIGINT" jt="-5" mandatory="y" unsigned="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="symbol" type="VARCHAR" length="13" jt="12" mandatory="y" />
+			<column name="ISIN" type="VARCHAR" length="12" jt="12" />
+			<column name="type" type="ENUM" jt="12" mandatory="y" >
+				<enumeration><![CDATA['stock','etf','trust']]></enumeration>
+			</column>
+			<column name="name" type="VARCHAR" length="255" jt="12" />
+			<column name="price" type="DECIMAL" length="10" decimal="2" jt="3" unsigned="y" />
+			<column name="volume" type="BIGINT" jt="-5" unsigned="y" />
+			<column name="idExchange" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" />
+			<column name="tradeable" type="TINYINT" jt="-6" mandatory="y" unsigned="y" >
+				<defo><![CDATA[1]]></defo>
+			</column>
+			<column name="idCurrency" type="MEDIUMINT" jt="4" unsigned="y" />
+			<column name="idIndustry" type="MEDIUMINT" jt="4" />
+			<column name="idSector" type="MEDIUMINT" jt="4" unsigned="y" />
+			<column name="CIK" type="INT" jt="4" >
+				<comment><![CDATA[Central Index Key]]></comment>
+			</column>
+			<column name="CUSIP" type="VARCHAR" length="9" jt="12" >
+				<comment><![CDATA[Committee on Uniform Security Identification Procedures]]></comment>
+			</column>
+			<column name="delistedDate" type="DATE" jt="91" />
+			<column name="lastFloatShares" type="BIGINT" jt="-5" unsigned="y" />
+			<column name="lastOutstandingShares" prior="latestOutstandingShares" type="BIGINT" jt="-5" unsigned="y" />
+			<column name="lastFreeFloat" type="DECIMAL" length="17" decimal="14" jt="3" unsigned="y" />
+			<column name="ipoDate" type="DATE" jt="91" />
+			<column name="updated" prior="modified" type="DATETIME" jt="93" >
+				<column_options><![CDATA[ON UPDATE CURRENT_TIMESTAMP]]></column_options>
+			</column>
+			<column name="created" type="DATETIME" jt="93" mandatory="y" >
+				<defo><![CDATA[current_timestamp()]]></defo>
+			</column>
+			<index name="pk_Stock" unique="PRIMARY_KEY" >
+				<column name="idStock" />
+			</index>
+			<index name="ui_Stock_symbol" unique="UNIQUE_KEY" >
+				<column name="symbol" options="ASC" />
+			</index>
+			<index name="ix_Stock_ISIN" unique="NORMAL" >
+				<column name="ISIN" />
+			</index>
+			<index name="ix_Stock_type" unique="NORMAL" >
+				<column name="type" />
+			</index>
+			<index name="fk_Stock_Exchange" unique="NORMAL" >
+				<column name="idExchange" />
+			</index>
+			<index name="fk_Stock_Currency" unique="NORMAL" >
+				<column name="idCurrency" />
+			</index>
+			<index name="fk_Stock_Industry" unique="NORMAL" >
+				<column name="idIndustry" />
+			</index>
+			<index name="fk_Stock_Sector" unique="NORMAL" >
+				<column name="idSector" />
+			</index>
+			<fk name="fk_Stock_Exchange" to_schema="pofolio" to_table="Exchange" >
+				<fk_column name="idExchange" pk="idExchange" />
+			</fk>
+			<fk name="fk_Stock_Currency" to_schema="pofolio" to_table="Currency" >
+				<fk_column name="idCurrency" pk="idCurrency" />
+			</fk>
+			<fk name="fk_Stock_Industry" to_schema="pofolio" to_table="Industry" >
+				<fk_column name="idIndustry" pk="idIndustry" />
+			</fk>
+			<fk name="fk_Stock_Sector" to_schema="pofolio" to_table="Sector" >
+				<fk_column name="idSector" pk="idSector" />
+			</fk>
+			<options><![CDATA[engine=InnoDB]]></options>
+		</table>
+		<table name="UpgradesDowngrades" prior="UpDowngrades" >
+			<column name="idUpgradesDowngrades" prior="idUpDowngrades" type="BIGINT" jt="-5" mandatory="y" unsigned="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="idStock" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
+			<column name="publishedDate" type="DATETIME" jt="93" mandatory="y" />
+			<column name="newGrade" type="VARCHAR" length="64" jt="12" />
+			<column name="previousGrade" type="VARCHAR" length="64" jt="12" />
+			<column name="gradingCompany" type="VARCHAR" length="100" jt="12" />
+			<column name="action" type="VARCHAR" length="32" jt="12" />
+			<column name="priceWhenPosted" type="DECIMAL" length="10" decimal="4" jt="3" unsigned="y" />
+			<column name="newsBaseURL" type="VARCHAR" length="255" jt="12" />
+			<column name="newsPublisher" type="VARCHAR" length="100" jt="12" />
+			<column name="newsURL" type="VARCHAR" length="1024" jt="12" />
+			<column name="newsTitle" type="VARCHAR" length="1024" jt="12" mandatory="y" >
+				<defo><![CDATA['']]></defo>
+			</column>
+			<column name="updated" type="DATETIME" jt="93" >
+				<column_options><![CDATA[ON UPDATE CURRENT_TIMESTAMP]]></column_options>
+			</column>
+			<column name="created" type="DATETIME" jt="93" mandatory="y" >
+				<defo><![CDATA[current_timestamp()]]></defo>
+			</column>
+			<index name="ui_UpgradesDowngrades" unique="UNIQUE_KEY" >
+				<column name="idStock" />
+				<column name="publishedDate" options="DESC" />
+			</index>
+			<index name="pk_UpgradesDowngrades" unique="PRIMARY_KEY" >
+				<column name="idUpgradesDowngrades" />
+			</index>
+			<fk name="fk_updowngrades_stock" to_schema="pofolio" to_table="Stock" >
+				<fk_column name="idStock" pk="idStock" />
+			</fk>
+			<options><![CDATA[engine=InnoDB]]></options>
+		</table>
+	</schema>
+	<connector name="MariaDb" database="MariaDb" driver_class="org.mariadb.jdbc.Driver" driver_jar="mariadb-java-client-3.2.0.jar" driver_desc="Standard" host="dev.local" port="3306" instance="pofolio" user="vagrant" passwd="" useSystemProxy="false" />
+	<layout name="financialmodelingprep" id="Layout-289" joined_routing="y" show_relation="columns" >
+		<entity schema="pofolio" name="Company" color="C1D8EE" x="640" y="288" />
+		<entity schema="pofolio" name="Currency" color="C1D8EE" x="48" y="560" />
+		<entity schema="pofolio" name="Dividend" color="C1D8EE" x="368" y="64" />
+		<entity schema="pofolio" name="Exchange" color="C1D8EE" x="48" y="384" />
+		<entity schema="pofolio" name="HistoricalPrice" color="C1D8EE" x="64" y="48" />
+		<entity schema="pofolio" name="Industry" color="C1D8EE" x="80" y="736" />
+		<entity schema="pofolio" name="PriceTarget" color="C1D8EE" x="656" y="688" />
+		<entity schema="pofolio" name="SIC" color="C1D8EE" x="896" y="496" />
+		<entity schema="pofolio" name="Sector" color="C1D8EE" x="96" y="880" />
+		<entity schema="pofolio" name="ShareFloat" color="C1D8EE" x="640" y="64" />
+		<entity schema="pofolio" name="Stock" color="C1D8EE" x="352" y="400" />
+		<entity schema="pofolio" name="UpgradesDowngrades" color="C1D8EE" x="880" y="656" />
+		<callout x="1184" y="96" pointer="Round" >
+			<comment><![CDATA[This is a layout - a diagram with tools.
+- Right-click the layout to create new tables.
+- Double-click table headers to edit.
+- For a better understanding of the schema, create multiple layouts.
+- Save the design to the model file, and deploy from 'Schema / Create into the database'.]]></comment>
+		</callout>
+	</layout>
+	<layout name="pofolio" id="Layout-1976" show_relation="columns" >
+		<entity schema="pofolio" name="Country" color="C1D8EE" x="352" y="48" />
+		<entity schema="pofolio" name="Language" color="C1D8EE" x="48" y="48" />
+		<entity schema="pofolio" name="Locales" color="C1D8EE" x="640" y="48" />
+	</layout>
+</project>
