@@ -12,7 +12,6 @@ namespace pofolio\jobs;
 
 // PHP gets an incredible amount of time
 use pofolio\classes\FMP\Client\FmpApiClient;
-use pofolio\classes\FMP\Response\StockDividend;
 use pofolio\dao\mysql\pofolio\Company;
 use pofolio\dao\mysql\pofolio\Currency;
 use pofolio\dao\mysql\pofolio\Dividend;
@@ -74,7 +73,6 @@ $connectOptions = [
     'database' => [\DB_POFOLIO],
 ];
 DataInterface::createDataInterface($connectOptions,  MySQLi::getInstance());
-
 $StockDAO = Stock::create();
 $stockTypes = $StockDAO->getColumnEnumValues('type');
 
