@@ -22,9 +22,10 @@ class Locale extends PofolioDAO
 
     protected array $columns = [
         'idLocale',
-        'locale',
         'idLanguage',
-        'idCountry'
+        'idCountry',
+        'locale',
+        'supported'
     ];
 
     public function exists(string $locale): bool

@@ -45,7 +45,8 @@ const IS_CLI = \PHP_SAPI === 'cli';
 
 if(IS_CLI) {
     $_SERVER['DOCUMENT_ROOT'] = '/virtualweb/manhart';
-    if(!\is_dir($_SERVER['DOCUMENT_ROOT'])) die('Root directory '.$_SERVER['DOCUMENT_ROOT'].' is missing!');
+    if(!\is_dir($_SERVER['DOCUMENT_ROOT']))
+        die('Root directory '.$_SERVER['DOCUMENT_ROOT'].' is missing!');
     $_SERVER['SERVER_NAME'] = \gethostname(); // php_uname('n');
     $lineBreak = \chr(10);
     $options = \getopt('vh', ['list::']);

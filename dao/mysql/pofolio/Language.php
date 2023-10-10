@@ -24,6 +24,8 @@ class Language extends PofolioDAO
         'idLanguage',
         'code',
         'language',
+        'locale',
+        'supported'
     ];
 
     public function exists(string $code): bool

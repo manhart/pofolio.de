@@ -74,22 +74,22 @@ $keys = [];
 $count = count($text);
 for($i = 0; $i < $count; $i++) {
     $locale = '';
-    $countryRow = $text[$i];
+    $countrySet = $text[$i];
 
     // Kommentarzeilen überspringen
-    if(str_starts_with($countryRow, '#')) {
-        if(str_starts_with($countryRow, '#ISO')) {
-            $keys = explode("\t", trim($countryRow));
+    if(str_starts_with($countrySet, '#')) {
+        if(str_starts_with($countrySet, '#ISO')) {
+            $keys = explode("\t", trim($countrySet));
             $keys[0] = substr($keys[0], 1);
         }
         continue;
     }
 
     // zwischen tabulator aufspalten
-    $countryRow = explode("\t", $countryRow);
+    $countrySet = explode("\t", $countrySet);
     $row = [];
-    for($j = 0, $jMax = count($countryRow); $j < $jMax; $j++) {
-        $row[trim($keys[$j])] = trim($countryRow[$j]);
+    for($j = 0, $jMax = count($countrySet); $j < $jMax; $j++) {
+        $row[trim($keys[$j])] = trim($countrySet[$j]);
     }
 
     $iso3316_alpha2 = $row['ISO'];
@@ -134,18 +134,11 @@ for($i = 0; $i < $count; $i++) {
     );
     $languageSet = $LanguageDAO->getMultiple(filter_rules: [['Language.code', 'equal', $mainLanguage]]);
     if(count($languageSet)) {
-        $languageRow = $languageSet->getRaw();
-        $idLanguage = $languageRow[0]['idLanguage'];
-        $countryData['idLanguage'] = $idLanguage;
+        $countryData['idLanguage'] = $languageSet->getValueAsInt('idLanguage');
     }
+    unset($languageSet);
 
-    // überprüfen, obe es ein Insert oder ein Update ist
-    $filter = [
-        ['Country.isoCode', 'equal', $iso3316_alpha2]
-    ];
-    $country_exists = $CountryDAO->getCount(filter_rules: $filter)->getValueAsBool('count');
-
-    if(!$country_exists) {
+    if(!($CountryDAO->exists($iso3316_alpha2))) {
         // insert
         $CountryDAO->insert($countryData);
     }
@@ -155,14 +148,16 @@ for($i = 0; $i < $count; $i++) {
             'Country.idCountry',
             'Country.blockUpdate'
         );
-        $countryRow = $CountryDAO->getMultiple(filter_rules: $filter)->getRaw();
-        if(count($countryRow)) {
-            $blockUpdate = $countryRow['0']['blockUpdate'];
-            if($blockUpdate) {
+        $filter = [
+            ['Country.isoCode', 'equal', $iso3316_alpha2]
+        ];
+
+        $countrySet = $CountryDAO->getMultiple(filter_rules: $filter);
+        if(count($countrySet)) {
+            if($countrySet->getValueAsBool('blockUpdate')) {
                 continue;
             }
-            $idCountry = $countryRow['0']['idCountry'];
-            $countryData['idCountry'] = $idCountry;
+            $countryData['idCountry'] = $countrySet->getValueAsInt('idCountry');
             $CountryDAO->update($countryData);
         }
     }
@@ -181,19 +176,18 @@ foreach($locales as $locale) {
     $displayLanguage = locale_get_display_language($locale);
     $region = locale_get_region($locale);
 
-    $localesData = [
-        'locales' => $locale
+    $localeData = [
+        'locale' => $locale
     ];
 
     // überprüfen, ob sprache enthalten ist
     $languageFilter = [
         ['Language.code', 'equal', $primaryLanguage]
     ];
-    $languageRow = $LanguageDAO->getMultiple(null, null, $languageFilter)->getRaw();
-    if($languageRow) {
+    $languageSet = $LanguageDAO->getMultiple(filter_rules: $languageFilter);
+    if(count($languageSet)) {
         // update
-        $idLanguage = $languageRow[0]['idLanguage'];
-
+        $idLanguage = $languageSet->getValueAsInt('idLanguage');
         $languageData = [
             'idLanguage' => $idLanguage,
             'code' => $primaryLanguage,
@@ -211,35 +205,34 @@ foreach($locales as $locale) {
         $Set = $LanguageDAO->insert($languageData);
         $idLanguage = $Set->getValue('last_insert_id');
     }
-    $localesData['idLanguage'] = $idLanguage;
+    $localeData['idLanguage'] = $idLanguage;
 
     $countryFilter = [
         ['Country.isoCode', 'equal', $region]
     ];
 
-    // Land ermitteln
-    $CountrySet = $CountryDAO->getMultiple(filter_rules: $countryFilter)->getRaw();
-    if($CountrySet) {
-        $idCountry = $CountrySet[0]['idCountry'];
-        $localesData['idCountry'] = $idCountry;
+    // determine country
+    $countrySet = $CountryDAO->getMultiple(filter_rules: $countryFilter);
+    if(count($countrySet)) {
+        $localeData['idCountry'] = $countrySet->getValueAsInt('idCountry');
     }
 
-    // überprüfen, obe es ein Insert oder ein Update ist
-    $localesFilter = [
-        ['Locales.locales', 'equal', $locale]
+    // check if locale exists
+    $localeFilter = [
+        ['Locale.locale', 'equal', $locale]
     ];
-    $locales_exists = $LocaleDAO->getCount(filter_rules: $localesFilter)->getValueAsBool('count');
+    $locales_exists = $LocaleDAO->getCount(filter_rules: $localeFilter)->getValueAsBool('count');
 
     if(!$locales_exists) {
-        $LocaleDAO->insert($localesData);
+        $LocaleDAO->insert($localeData);
     }
     else {
         $LocaleDAO->setColumns(
-            'Locales.idLocales',
+            'Locale.idLocale',
         );
-        $idLocales = $LocaleDAO->getMultiple(filter_rules: $localesFilter)->getRaw()[0]['idLocales'];
-        $localesData['idLocales'] = $idLocales;
+        $idLocales = $LocaleDAO->getMultiple(filter_rules: $localeFilter)->getValueAsInt('idLocale');
+        $localeData['idLocale'] = $idLocales;
 
-        $LocaleDAO->update($localesData);
+        $LocaleDAO->update($localeData);
     }
 }

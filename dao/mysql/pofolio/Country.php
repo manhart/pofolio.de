@@ -24,6 +24,7 @@ class Country extends PofolioDAO
         'idCountry',
         'isoCode',
         'countryName',
+        'locale',
         'capital',
         'continent',
         'tld',
@@ -32,9 +33,10 @@ class Country extends PofolioDAO
         'phonePrefix',
         'postalCodeFormat',
         'postalCodeRegex',
+        'idLanguage',
         'languages',
-        'locale',
-        'blockUpdate'
+        'blockUpdate',
+        'supported'
     ];
 
     public function exists(string $iso3316_alpha2): bool

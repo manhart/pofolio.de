@@ -25,6 +25,9 @@
 			<index name="pk_Company" unique="PRIMARY_KEY" >
 				<column name="idStock" />
 			</index>
+			<index name="fk_company_sic" unique="NORMAL" >
+				<column name="sicCode" />
+			</index>
 			<fk name="fk_Company_Stock" to_schema="pofolio" to_table="Stock" >
 				<fk_column name="idStock" pk="idStock" />
 			</fk>
@@ -37,9 +40,36 @@
 			<column name="idCountry" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" >
 				<identity><![CDATA[AUTO_INCREMENT]]></identity>
 			</column>
+			<column name="isoCode" type="CHAR" length="2" jt="1" />
+			<column name="country" type="VARCHAR" length="255" jt="12" />
+			<column name="locale" type="VARCHAR" length="15" jt="12" />
+			<column name="capital" type="VARCHAR" length="50" jt="12" />
+			<column name="continent" type="VARCHAR" length="10" jt="12" />
+			<column name="tld" type="VARCHAR" length="5" jt="12" />
+			<column name="currencyCode" type="VARCHAR" length="15" jt="12" />
+			<column name="currencyName" type="VARCHAR" length="50" jt="12" />
+			<column name="phonePrefix" prior="phone" type="VARCHAR" length="20" jt="12" />
+			<column name="postalCodeFormat" type="VARCHAR" length="100" jt="12" />
+			<column name="postalCodeRegex" type="VARCHAR" length="200" jt="12" />
+			<column name="idLanguage" type="MEDIUMINT" jt="4" unsigned="y" >
+				<comment><![CDATA[primary language]]></comment>
+			</column>
+			<column name="languages" type="VARCHAR" length="100" jt="12" />
+			<column name="blockUpdate" type="TINYINT" jt="-6" mandatory="y" unsigned="y" >
+				<defo><![CDATA[0]]></defo>
+			</column>
+			<column name="supported" type="TINYINT" jt="-6" mandatory="y" unsigned="y" >
+				<defo><![CDATA[0]]></defo>
+			</column>
 			<index name="pk_Country" unique="PRIMARY_KEY" >
 				<column name="idCountry" />
 			</index>
+			<index name="fk_country_language" unique="NORMAL" >
+				<column name="idLanguage" />
+			</index>
+			<fk name="fk_country_language" to_schema="pofolio" to_table="Language" >
+				<fk_column name="idLanguage" pk="idLanguage" />
+			</fk>
 			<options><![CDATA[engine=InnoDB]]></options>
 		</table>
 		<table name="Currency" >
@@ -154,20 +184,27 @@
 			</column>
 			<column name="code" type="VARCHAR" length="4" jt="12" mandatory="y" />
 			<column name="language" type="VARCHAR" length="45" jt="12" />
+			<column name="locale" type="VARCHAR" length="15" jt="12" />
+			<column name="supported" type="TINYINT" jt="-6" mandatory="y" unsigned="y" >
+				<defo><![CDATA[0]]></defo>
+			</column>
 			<index name="pk_Language" unique="PRIMARY_KEY" >
 				<column name="idLanguage" />
 			</index>
 			<options><![CDATA[engine=InnoDB]]></options>
 		</table>
-		<table name="Locales" >
-			<column name="idLocales" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" >
+		<table name="Locale" prior="Locales" >
+			<column name="idLocale" prior="idLocales" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" >
 				<identity><![CDATA[AUTO_INCREMENT]]></identity>
 			</column>
 			<column name="idLanguage" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" />
 			<column name="idCountry" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" />
-			<column name="locales" type="VARCHAR" length="15" jt="12" />
+			<column name="locale" prior="locales" type="VARCHAR" length="15" jt="12" />
+			<column name="supported" type="TINYINT" jt="-6" mandatory="y" unsigned="y" >
+				<defo><![CDATA[0]]></defo>
+			</column>
 			<index name="pk_Locales" unique="PRIMARY_KEY" >
-				<column name="idLocales" />
+				<column name="idLocale" />
 			</index>
 			<options><![CDATA[engine=InnoDB]]></options>
 		</table>
@@ -367,7 +404,7 @@
 			<options><![CDATA[engine=InnoDB]]></options>
 		</table>
 	</schema>
-	<connector name="MariaDb" database="MariaDb" driver_class="org.mariadb.jdbc.Driver" driver_jar="mariadb-java-client-3.2.0.jar" driver_desc="Standard" host="dev.local" port="3306" instance="pofolio" user="vagrant" passwd="" useSystemProxy="false" />
+	<connector name="MariaDb" database="MariaDb" driver_class="org.mariadb.jdbc.Driver" driver_jar="mariadb-java-client-3.2.0.jar" driver_desc="Standard" host="dev.local" port="3306" instance="pofolio" user="vagrant" useSystemProxy="false" />
 	<layout name="financialmodelingprep" id="Layout-289" joined_routing="y" show_relation="columns" >
 		<entity schema="pofolio" name="Company" color="C1D8EE" x="640" y="288" />
 		<entity schema="pofolio" name="Currency" color="C1D8EE" x="48" y="560" />
@@ -392,6 +429,6 @@
 	<layout name="pofolio" id="Layout-1976" show_relation="columns" >
 		<entity schema="pofolio" name="Country" color="C1D8EE" x="352" y="48" />
 		<entity schema="pofolio" name="Language" color="C1D8EE" x="48" y="48" />
-		<entity schema="pofolio" name="Locales" color="C1D8EE" x="640" y="48" />
+		<entity schema="pofolio" name="Locale" color="C1D8EE" x="640" y="64" />
 	</layout>
 </project>
