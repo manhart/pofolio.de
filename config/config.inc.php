@@ -34,7 +34,7 @@ use pofolio\config\Stage;
 switch($serverName = $_SERVER['SERVER_NAME'] ??= gethostname()) {
     case 'g7system': // CLI host
     case 'dev.local':
-    case 'pofolio.local':
+    case 'pofolio':
         #Develop box
         $stage = stage::develop;
         $relativeRoot = '..';
