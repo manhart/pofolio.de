@@ -104,7 +104,7 @@ class Response implements ResponseInterface, FactoryInterface, Iterator
         $this->position = 0;
     }
 
-    public function getResponseValueAsInt(string $key, mixed $default = null): ?int
+    public function getResponseValueAsInt(string $key, mixed $default = 0): int
     {
         return ($value = $this->getResponseValue($key, $default)) === null ? $default : (int)$value;
     }
@@ -123,6 +123,8 @@ class Response implements ResponseInterface, FactoryInterface, Iterator
     {
         try {
             $value = $this->getResponseValue($key, $default);
+            // remove line breaks, because they are not allowed in a DateTime string (ISO 8601)
+            $value = mb_ereg_replace("(\r\n|\r|\n)", '', $value);
             $value = empty($value) ? $default : new \DateTime($value);
         }
         catch(\Exception) {
