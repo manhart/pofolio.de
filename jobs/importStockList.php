@@ -13,6 +13,7 @@ namespace pofolio\jobs;
 // PHP gets an incredible amount of time
 use pofolio\classes\FMP\Client\FmpApiClient;
 use pofolio\dao\mysql\pofolio\Company;
+use pofolio\dao\mysql\pofolio\Country;
 use pofolio\dao\mysql\pofolio\Currency;
 use pofolio\dao\mysql\pofolio\Dividend;
 use pofolio\dao\mysql\pofolio\Exchange;
@@ -80,7 +81,23 @@ $stockTypes = $StockDAO->getColumnEnumValues('type');
 
 $client = FmpApiClient::getInstance();
 
-$symbol = 'AAPL';
+// truncate all tables
+//ShareFloat::create()->truncate();
+//Dividend::create()->truncate();
+//PriceTarget::create()->truncate();
+//UpgradesDowngrades::create()->truncate();
+//HistoricalPrice::create()->truncate();
+//Company::create()->truncate();
+//Stock::create()->truncate();
+//Exchange::create()->truncate();
+//Industry::create()->truncate();
+//Sector::create()->truncate();
+//Currency::create()->truncate();
+//SIC::create()->truncate();
+
+
+
+$symbol = 'KTN.DE';
 stockImporter($client, $symbol);
 shareFloatImporter($client, $symbol);
 dividendImporter($client, $symbol);
@@ -88,7 +105,7 @@ priceTargetImporter($client, $symbol);
 upgradesDowngradesImporter($client, $symbol);
 historicalPriceImporter($client, $symbol);
 
-
+die();
 $stockList = $client->getStockList();
 
 
@@ -96,6 +113,7 @@ foreach($stockList as $stock) {
     $symbol = $stockList->getSymbol();
 
     echo 'Symbol: '.$symbol.LINE_BREAK;
+
     /** @noinspection ForgottenDebugOutputInspection */
     \var_dump($stock);
 
@@ -215,10 +233,15 @@ function stockImporter(FmpApiClient $client, string $symbol, ?string $type = nul
         }
     }
 
+    // Country
+    $country = $Profile->getCountry();
+    $idCountry = Country::create()->setColumns('idCountry')->get($country, 'isoCode')->getValueAsInt('idCountry') ?: null;
+
     // Stock
     $stockData = [
         'symbol' => $symbol,
         'type' => $type,
+        'price' => $Profile->getPrice(),
         'name' => $Profile->getCompanyName(),
         'idExchange' => $idExchange,
         'idCurrency' => $idCurrency ?? null,
@@ -228,6 +251,7 @@ function stockImporter(FmpApiClient $client, string $symbol, ?string $type = nul
         'CUSIP' => $Profile->getCUSIP(),
         'idIndustry' => $idIndustry ?? null,
         'idSector' => $idSector ?? null,
+        'idCountry' => $idCountry,
         'ipoDate' => $Profile->getIpoDate(),
     ];
 
@@ -286,11 +310,14 @@ function stockImporter(FmpApiClient $client, string $symbol, ?string $type = nul
     // download image and save it to resources/images/stock/
     $image = $Profile->getImage();
     if($image) {
-        $imagePath = DIR_DOCUMENT_ROOT.'/resources/images/stock/'.$symbol.'.png';
-        if(!\file_exists($imagePath)) {
+        $destImagePath = DIR_DOCUMENT_ROOT . '/resources/images/stock/';
+        mkdirs($destImagePath);
+        $ext = file_extension($image);
+        $logo = "$destImagePath$symbol.$ext";
+        if(!\file_exists($logo)) {
             $imageData = \file_get_contents($image);
             if($imageData !== false)
-                \file_put_contents($imagePath, $imageData);
+                \file_put_contents($logo, $imageData);
         }
     }
     return $idStock;

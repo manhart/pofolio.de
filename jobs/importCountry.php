@@ -163,7 +163,7 @@ for($i = 0; $i < $count; $i++) {
     }
 }
 
-// locales/sprachen aus intl extension importieren
+// Import locales/languages from intl extension
 
 $locales = resourcebundle_locales('');
 
@@ -180,7 +180,7 @@ foreach($locales as $locale) {
         'locale' => $locale
     ];
 
-    // überprüfen, ob sprache enthalten ist
+    // check whether language is included
     $languageFilter = [
         ['Language.code', 'equal', $primaryLanguage]
     ];
