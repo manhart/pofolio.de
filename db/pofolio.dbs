@@ -41,7 +41,7 @@
 				<identity><![CDATA[AUTO_INCREMENT]]></identity>
 			</column>
 			<column name="isoCode" type="CHAR" length="2" jt="1" />
-			<column name="country" type="VARCHAR" length="255" jt="12" />
+			<column name="countryName" prior="country" type="VARCHAR" length="255" jt="12" />
 			<column name="locale" type="VARCHAR" length="15" jt="12" />
 			<column name="capital" type="VARCHAR" length="50" jt="12" />
 			<column name="continent" type="VARCHAR" length="10" jt="12" />
@@ -198,7 +198,7 @@
 				<identity><![CDATA[AUTO_INCREMENT]]></identity>
 			</column>
 			<column name="idLanguage" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" />
-			<column name="idCountry" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" />
+			<column name="idCountry" type="MEDIUMINT" jt="4" unsigned="y" />
 			<column name="locale" prior="locales" type="VARCHAR" length="15" jt="12" />
 			<column name="supported" type="TINYINT" jt="-6" mandatory="y" unsigned="y" >
 				<defo><![CDATA[0]]></defo>
@@ -206,6 +206,9 @@
 			<index name="pk_Locales" unique="PRIMARY_KEY" >
 				<column name="idLocale" />
 			</index>
+			<fk name="fk_locale_country" to_schema="pofolio" to_table="Country" >
+				<fk_column name="idCountry" pk="idCountry" />
+			</fk>
 			<options><![CDATA[engine=InnoDB]]></options>
 		</table>
 		<table name="PriceTarget" >
@@ -311,6 +314,7 @@
 				<defo><![CDATA[1]]></defo>
 			</column>
 			<column name="idCurrency" type="MEDIUMINT" jt="4" unsigned="y" />
+			<column name="idCountry" type="MEDIUMINT" jt="4" unsigned="y" />
 			<column name="idIndustry" type="MEDIUMINT" jt="4" />
 			<column name="idSector" type="MEDIUMINT" jt="4" unsigned="y" />
 			<column name="CIK" type="INT" jt="4" >
@@ -365,6 +369,9 @@
 			</fk>
 			<fk name="fk_Stock_Sector" to_schema="pofolio" to_table="Sector" >
 				<fk_column name="idSector" pk="idSector" />
+			</fk>
+			<fk name="fk_Stock_Country" to_schema="pofolio" to_table="Country" >
+				<fk_column name="idCountry" pk="idCountry" />
 			</fk>
 			<options><![CDATA[engine=InnoDB]]></options>
 		</table>
