@@ -31,12 +31,12 @@ class ShareFloat extends Response
 
     public function getFloatShares(): ?int
     {
-        return $this->getResponseValueAsInt('floatShares');
+        return $this->getResponseValueAsInt('floatShares') ?: null;
     }
 
     public function getOutstandingShares(): ?int
     {
-        return $this->getResponseValueAsInt('outstandingShares');
+        return $this->getResponseValueAsInt('outstandingShares') ?: null;
     }
 
     public function getSource(): ?string

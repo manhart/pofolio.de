@@ -21,7 +21,7 @@ class CompanyCoreInformation extends Response
 
     public function getCIK(): ?int
     {
-        return $this->getResponseValueAsInt('cik');
+        return $this->getResponseValueAsInt('cik') ?: null;
     }
 
     public function getExchange(): string
@@ -31,7 +31,7 @@ class CompanyCoreInformation extends Response
 
     public function getSICCode(): ?int
     {
-        return $this->getResponseValueAsInt('sicCode');
+        return $this->getResponseValueAsInt('sicCode') ?: null;
     }
 
     public function getSICGroup(): ?string

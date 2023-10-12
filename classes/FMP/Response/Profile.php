@@ -96,7 +96,7 @@ class Profile extends Response
 
     public function getVolAvg(): ?int
     {
-        return $this->getResponseValueAsInt('volAvg');
+        return $this->getResponseValueAsInt('volAvg') ?: null;
     }
 
     public function getExchange(): ?string
@@ -115,18 +115,17 @@ class Profile extends Response
     }
 
     /**
-     * @return int Central Index Key
+     * @return int|null Central Index Key
      */
-    public function getCIK(): int
+    public function getCIK(): ?int
     {
-        return $this->getResponseValueAsInt('cik');
+        return $this->getResponseValueAsInt('cik') ?: null;
     }
 
     public function getISIN(): ?string
     {
         return $this->getResponseValue('isin');
     }
-
 
     /**
      * @return string|null Committee on Uniform Securities Identification Procedures
@@ -143,7 +142,7 @@ class Profile extends Response
 
     public function getMktCap(): ?int
     {
-        return $this->getResponseValueAsInt('mktCap');
+        return $this->getResponseValueAsInt('mktCap') ?: null;
     }
 
     public function getCurrency(): ?string
@@ -163,7 +162,7 @@ class Profile extends Response
 
     public function getDcf(): ?float
     {
-        return $this->getResponseValueAsFloat('dcf');
+        return $this->getResponseValueAsFloat('dcf') ?: null;
     }
 
     public function getImage(): ?string
