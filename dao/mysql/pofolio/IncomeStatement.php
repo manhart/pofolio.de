@@ -61,11 +61,11 @@ class IncomeStatement extends PofolioDAO
         'finalLink',
     ];
 
-    public const PERIOD_FISCAL_YEAR = 'FY';
-    public const PERIOD_QUARTER1 = 'Q1';
-    public const PERIOD_QUARTER2 = 'Q2';
-    public const PERIOD_QUARTER3 = 'Q3';
-    public const PERIOD_QUARTER4 = 'Q4';
+    public const PERIOD_FISCAL_YEAR = 'FY',
+        PERIOD_QUARTER1 = 'Q1',
+        PERIOD_QUARTER2 = 'Q2',
+        PERIOD_QUARTER3 = 'Q3',
+        PERIOD_QUARTER4 = 'Q4';
 
     public function exists(int $idStock, string $calendarYear, string $period = self::PERIOD_FISCAL_YEAR): bool
     {

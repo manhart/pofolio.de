@@ -1,6 +1,83 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <project name="pofolio" id="Project-1510" database="MariaDb" >
 	<schema name="pofolio" >
+		<table name="BalanceSheetStatement" >
+			<column name="idBalanceSheetStatement" type="BIGINT" jt="-5" mandatory="y" unsigned="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="idStock" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
+			<column name="date" type="DATE" jt="91" mandatory="y" />
+			<column name="idReportedCurrency" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" />
+			<column name="fillingDate" type="DATE" jt="91" />
+			<column name="acceptedDate" type="DATETIME" jt="93" />
+			<column name="calendarYear" type="YEAR" length="4" jt="4" mandatory="y" unsigned="y" />
+			<column name="timePeriod" type="CHAR" length="2" jt="1" mandatory="y" />
+			<column name="periodOrder" type="TINYINT" jt="-6" mandatory="y" unsigned="y" />
+			<column name="cashAndCashEquivalents" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="shortTermInvestments" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="cashAndShortTermInvestments" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="netReceivables" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="inventory" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="otherCurrentAssets" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="totalCurrentAssets" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="propertyPlantEquipmentNet" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="goodwill" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="intangibleAssets" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="goodwillAndIntangibleAssets" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="longTermInvestments" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="taxAssets" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="otherNonCurrentAssets" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="totalNonCurrentAssets" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="otherAssets" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="totalAssets" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="accountPayables" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="shortTermDebt" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="taxPayables" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="deferredRevenue" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="otherCurrentLiabilities" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="totalCurrentLiabilities" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="longTermDebt" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="deferredRevenueNonCurrent" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="deferredTaxLiabilitiesNonCurrent" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="otherNonCurrentLiabilities" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="totalNonCurrentLiabilities" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="otherLiabilities" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="capitalLeaseObligations" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="totalLiabilities" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="preferredStock" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="commonStock" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="retainedEarnings" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="accumulatedOtherComprehensiveIncomeLoss" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="othertotalStockholdersEquity" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="totalStockholdersEquity" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="totalEquity" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="totalLiabilitiesAndStockholdersEquity" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="minorityInterest" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="totalLiabilitiesAndTotalEquity" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="totalInvestments" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="totalDebt" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="netDebt" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="link" type="VARCHAR" length="512" jt="12" />
+			<column name="finalLink" type="VARCHAR" length="512" jt="12" />
+			<column name="updated" type="DATETIME" jt="93" >
+				<column_options><![CDATA[ON UPDATE CURRENT_TIMESTAMP]]></column_options>
+			</column>
+			<column name="created" type="DATETIME" jt="93" mandatory="y" >
+				<defo><![CDATA[current_timestamp()]]></defo>
+			</column>
+			<index name="pk_BalanceSheetStatement" unique="PRIMARY_KEY" >
+				<column name="idBalanceSheetStatement" />
+			</index>
+			<index name="ui_BalanceSheetStatement" unique="UNIQUE_KEY" >
+				<column name="idStock" />
+				<column name="calendarYear" />
+				<column name="timePeriod" />
+			</index>
+			<fk name="fk_balancesheetstatement" to_schema="pofolio" to_table="Stock" >
+				<fk_column name="idStock" pk="idStock" />
+			</fk>
+			<options><![CDATA[engine=InnoDB]]></options>
+		</table>
 		<table name="Company" >
 			<column name="idStock" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
 			<column name="companyName" type="VARCHAR" length="100" jt="12" />
@@ -179,7 +256,7 @@
 				<defo><![CDATA['FY']]></defo>
 				<enumeration><![CDATA['FY','Q1','Q2','Q3','Q4']]></enumeration>
 			</column>
-			<column name="periodOrder" type="SMALLINT" jt="5" mandatory="y" unsigned="y" />
+			<column name="periodOrder" type="TINYINT" jt="-6" mandatory="y" unsigned="y" />
 			<column name="revenue" type="DECIMAL" length="17" decimal="0" jt="3" />
 			<column name="costOfRevenue" type="DECIMAL" length="17" decimal="0" jt="3" />
 			<column name="grossProfit" type="DECIMAL" length="17" decimal="0" jt="3" />
@@ -210,6 +287,12 @@
 			<column name="weightedAverageShsOutDil" type="DECIMAL" length="17" decimal="0" jt="3" />
 			<column name="link" type="VARCHAR" length="512" jt="12" />
 			<column name="finalLink" type="VARCHAR" length="512" jt="12" />
+			<column name="updated" type="DATETIME" jt="93" >
+				<column_options><![CDATA[ON UPDATE CURRENT_TIMESTAMP]]></column_options>
+			</column>
+			<column name="created" type="DATETIME" jt="93" mandatory="y" >
+				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+			</column>
 			<index name="pk_IncomeStatement" unique="PRIMARY_KEY" >
 				<column name="idIncomeStatement" />
 			</index>
@@ -480,20 +563,21 @@
 	</schema>
 	<connector name="MariaDb" database="MariaDb" driver_class="org.mariadb.jdbc.Driver" driver_jar="mariadb-java-client-3.2.0.jar" driver_desc="Standard" host="dev.local" port="3306" instance="pofolio" user="vagrant" useSystemProxy="false" />
 	<layout name="financialmodelingprep" id="Layout-289" joined_routing="y" show_relation="columns" >
-		<entity schema="pofolio" name="Company" color="C1D8EE" x="656" y="288" />
-		<entity schema="pofolio" name="Currency" color="C1D8EE" x="48" y="784" />
-		<entity schema="pofolio" name="Dividend" color="C1D8EE" x="352" y="64" />
-		<entity schema="pofolio" name="Exchange" color="C1D8EE" x="48" y="384" />
-		<entity schema="pofolio" name="HistoricalPrice" color="C1D8EE" x="48" y="48" />
-		<entity schema="pofolio" name="IncomeStatement" color="C1D8EE" x="336" y="864" />
-		<entity schema="pofolio" name="Industry" color="C1D8EE" x="48" y="528" />
-		<entity schema="pofolio" name="PriceTarget" color="C1D8EE" x="672" y="688" />
-		<entity schema="pofolio" name="SIC" color="C1D8EE" x="896" y="496" />
-		<entity schema="pofolio" name="Sector" color="C1D8EE" x="48" y="656" />
-		<entity schema="pofolio" name="ShareFloat" color="C1D8EE" x="656" y="64" />
-		<entity schema="pofolio" name="Stock" color="C1D8EE" x="336" y="400" />
-		<entity schema="pofolio" name="UpgradesDowngrades" color="C1D8EE" x="672" y="976" />
-		<callout x="1168" y="96" pointer="Round" >
+		<entity schema="pofolio" name="BalanceSheetStatement" color="C1D8EE" x="432" y="976" />
+		<entity schema="pofolio" name="Company" color="C1D8EE" x="640" y="256" />
+		<entity schema="pofolio" name="Currency" color="C1D8EE" x="48" y="816" />
+		<entity schema="pofolio" name="Dividend" color="C1D8EE" x="352" y="96" />
+		<entity schema="pofolio" name="Exchange" color="C1D8EE" x="48" y="416" />
+		<entity schema="pofolio" name="HistoricalPrice" color="C1D8EE" x="48" y="80" />
+		<entity schema="pofolio" name="IncomeStatement" color="C1D8EE" x="80" y="976" />
+		<entity schema="pofolio" name="Industry" color="C1D8EE" x="48" y="560" />
+		<entity schema="pofolio" name="PriceTarget" color="C1D8EE" x="656" y="672" />
+		<entity schema="pofolio" name="SIC" color="C1D8EE" x="848" y="256" />
+		<entity schema="pofolio" name="Sector" color="C1D8EE" x="48" y="688" />
+		<entity schema="pofolio" name="ShareFloat" color="C1D8EE" x="640" y="48" />
+		<entity schema="pofolio" name="Stock" color="C1D8EE" x="336" y="432" />
+		<entity schema="pofolio" name="UpgradesDowngrades" color="C1D8EE" x="896" y="656" />
+		<callout x="1168" y="128" pointer="Round" >
 			<comment><![CDATA[This is a layout - a diagram with tools.
 - Right-click the layout to create new tables.
 - Double-click table headers to edit.

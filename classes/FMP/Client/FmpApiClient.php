@@ -10,6 +10,7 @@
 
 namespace pofolio\classes\FMP\Client;
 
+use pofolio\classes\FMP\Response\BalanceSheetStatement;
 use pofolio\classes\FMP\Response\CompanyCoreInformation;
 use pofolio\classes\FMP\Response\DelistedCompanies;
 use pofolio\classes\FMP\Response\HistoricalPrice;
@@ -175,6 +176,15 @@ class FmpApiClient
     public function getIncomeStatement(string $symbol, ?string $period = IncomeStatement::PERIOD_ANNUAL, ?string $dataType = 'json', ?int $limit = null): IncomeStatement
     {
         return IncomeStatement::create($this, $symbol, limit: $limit, period: $period);
+    }
+
+    public function getBalanceSheetStatement(string|int $symbolOrCIK, ?string $period = IncomeStatement::PERIOD_ANNUAL, ?string $dataType = 'json', ?int $limit = null): BalanceSheetStatement
+    {
+        if(is_int($symbolOrCIK)) {
+            // format CIK as string
+            $symbolOrCIK = \str_pad((string)$symbolOrCIK, 10, '0', \STR_PAD_LEFT);
+        }
+        return BalanceSheetStatement::create($this, $symbolOrCIK, limit: $limit, period: $period);
     }
 
     public function getLastEndpointURL(): string

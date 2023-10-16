@@ -12,6 +12,7 @@ namespace pofolio\jobs;
 
 // PHP gets an incredible amount of time
 use pofolio\classes\FMP\Client\FmpApiClient;
+use pofolio\dao\mysql\pofolio\BalanceSheetStatement;
 use pofolio\dao\mysql\pofolio\Company;
 use pofolio\dao\mysql\pofolio\Country;
 use pofolio\dao\mysql\pofolio\Currency;
@@ -98,11 +99,11 @@ $client = FmpApiClient::getInstance();
 
 
 
-$symbols = [/*'INTC', 'HOT.DE', '639.DE', 'EA', 'NEM.DE', 'DE', 'AZN.L', 'TMV.DE', 'LMT', 'BHP', 'UBER', '3RB.DE', '2587.T', 'CVS', 'TPE.DE', 'SHF.DE',
+$symbols = ['INTC', 'HOT.DE', '639.DE', 'EA', 'NEM.DE', 'DE', 'AZN.L', 'TMV.DE', 'LMT', 'BHP', 'UBER', '3RB.DE', '2587.T', 'CVS', 'TPE.DE', 'SHF.DE',
     'DHI', 'DEMANT.CO', 'QSR', 'PANW', 'MCD', '5108.T', 'ORCL', 'QLYS', '11B.WA', 'MAR', 'PDX.ST', 'NTNX', 'NKE', 'TOM.OL', 'TTE.PA', 'AVGO', 'NEM',
     'ALV.DE', 'NOC', '0941.HK', 'IAC', '3662.HK', 'CHGG', 'APPS', 'COMP', 'LPSN', 'FNKO', 'FSLY', 'COIN', 'CRNC', 'SMWB', 'ZBRA', 'ILMN', 'MPW',
     'BPOST.BR', '5CP.SI', 'CDR.WA', 'AMS.SW', '013A.F', '1044.HK', 'M0YN.DE', 'MRK.DE', 'DHL.DE', 'CCC3.DE', 'AIR.DE', 'BAKKA.OL', 'AMGN', 'GFT.DE',
-    'SAM', 'PAYX', 'ECV.DE',*/ 'WPM', 'META', 'SIE.DE', 'INVE-A.ST', 'INVE-B.ST', 'JKHY', 'PSTG', 'MUV2.DE', 'SALM.OL', 'INFY.NS', 'GOOGL', 'MTX.DE',
+    'SAM', 'PAYX', 'ECV.DE', 'WPM', 'META', 'SIE.DE', 'INVE-A.ST', 'INVE-B.ST', 'JKHY', 'PSTG', 'MUV2.DE', 'SALM.OL', 'INFY.NS', 'GOOGL', 'MTX.DE',
     'ATS.VI', 'FDS', 'NXU.DE', 'ADSK', 'AAD.DE', 'BC8.DE', 'MDO.DE', 'ANET', 'EVD.DE', 'ZS', 'CMG', 'MSFT', 'ADBE', 'NVO', 'NOVO-B.CO', 'NOVC.DE',
     'DMRE.DE', 'KTN.DE', 'TTD', 'NVDA', 'AMZN'];
 foreach($symbols as $symbol) {
@@ -120,6 +121,7 @@ foreach($symbols as $symbol) {
     upgradesDowngradesImporter($client, $symbol);
     historicalPriceImporter($client, $symbol);
     incomeStatementImporter($client, $symbol);
+    balanceSheetStatementImporter($client, $symbol);
 //    break;
 }
 
@@ -148,6 +150,7 @@ foreach($stockList as $stock) {
     priceTargetImporter($client, $idStock);
     upgradesDowngradesImporter($client, $idStock);
     historicalPriceImporter($client, $idStock);
+    incomeStatementImporter($client, $idStock);
 
     refreshShareFloat($idStock);
 
@@ -648,6 +651,121 @@ function incomeStatementImporter(FmpApiClient $client, string $symbol): void
 
     $importIncomeStatement($incomeStatementAnnual, $idStock, $symbol);
     $importIncomeStatement($incomeStatementQuarter, $idStock, $symbol);
+}
+
+function balanceSheetStatementImporter(FmpApiClient $client, string $symbol): void
+{
+    [$idStock, $symbol] = extractSymbol($symbol);
+    $balanceSheetStatementAnnual = $client->getBalanceSheetStatement($symbol);
+    echo 'BalanceSheetStatement for: '.$symbol.LINE_BREAK;
+    $balanceSheetStatementAnnual->dump();
+
+    $balanceSheetStatementQuarterly = $client->getBalanceSheetStatement($symbol, \pofolio\classes\FMP\Response\BalanceSheetStatement::PERIOD_QUARTER);
+    // dump not necessary
+
+    $importBalanceSheetStatement = static function(
+        \pofolio\classes\FMP\Response\BalanceSheetStatement $balanceSheetStatement,
+        mixed $idStock,
+        string $symbol
+    ): void {
+        $balanceSheetStatementDAO = BalanceSheetStatement::create();
+        $currencyDAO = Currency::create();
+        foreach($balanceSheetStatement as $ignored) {
+
+            $idReportedCurrency = $currencyDAO->setColumns('idCurrency')->get($balanceSheetStatement->getReportedCurrency(),
+                'currency')->getValueAsInt('idCurrency') ?:
+                Stock::create()->setColumns('idCurrency')->get($idStock, 'idStock')->getValueAsInt('idCurrency');
+
+            $periodOrder = match ($balanceSheetStatement->getPeriod()) {
+                BalanceSheetStatement::PERIOD_QUARTER1 => 1,
+                BalanceSheetStatement::PERIOD_QUARTER2 => 2,
+                BalanceSheetStatement::PERIOD_QUARTER3 => 3,
+                BalanceSheetStatement::PERIOD_QUARTER4 => 4,
+                BalanceSheetStatement::PERIOD_FISCAL_YEAR => 0,
+                default => throw new RuntimeException('Unknown period: ' . $balanceSheetStatement->getPeriod()),
+            };
+
+            $calendarYear = $balanceSheetStatement->getCalendarYear();
+            $period = $balanceSheetStatement->getPeriod();
+
+            $balanceSheetStatementData = [
+                'idStock' => $idStock,
+                'date' => $balanceSheetStatement->getDate(),
+                'idReportedCurrency' => $idReportedCurrency,
+                'fillingDate' => $balanceSheetStatement->getFillingDate(),
+                'acceptedDate' => $balanceSheetStatement->getAcceptedDate(),
+                'calendarYear' => $calendarYear,
+                'timePeriod' => $period,
+                'periodOrder' => $periodOrder,
+                'cashAndCashEquivalents' => $balanceSheetStatement->getCashAndCashEquivalents(),
+                'shortTermInvestments' => $balanceSheetStatement->getShortTermInvestments(),
+                'cashAndShortTermInvestments' => $balanceSheetStatement->getCashAndShortTermInvestments(),
+                'netReceivables' => $balanceSheetStatement->getNetReceivables(),
+                'inventory' => $balanceSheetStatement->getInventory(),
+                'otherCurrentAssets' => $balanceSheetStatement->getOtherCurrentAssets(),
+                'totalCurrentAssets' => $balanceSheetStatement->getTotalCurrentAssets(),
+                'propertyPlantEquipmentNet' => $balanceSheetStatement->getPropertyPlantEquipmentNet(),
+                'goodwill' => $balanceSheetStatement->getGoodwill(),
+                'intangibleAssets' => $balanceSheetStatement->getIntangibleAssets(),
+                'goodwillAndIntangibleAssets' => $balanceSheetStatement->getGoodwillAndIntangibleAssets(),
+                'longTermInvestments' => $balanceSheetStatement->getLongTermInvestments(),
+                'taxAssets' => $balanceSheetStatement->getTaxAssets(),
+                'otherNonCurrentAssets' => $balanceSheetStatement->getOtherNonCurrentAssets(),
+                'totalNonCurrentAssets' => $balanceSheetStatement->getTotalNonCurrentAssets(),
+                'otherAssets' => $balanceSheetStatement->getOtherAssets(),
+                'totalAssets' => $balanceSheetStatement->getTotalAssets(),
+                'accountPayables' => $balanceSheetStatement->getAccountPayables(),
+                'shortTermDebt' => $balanceSheetStatement->getShortTermDebt(),
+                'taxPayables' => $balanceSheetStatement->getTaxPayables(),
+                'deferredRevenue' => $balanceSheetStatement->getDeferredRevenue(),
+                'otherCurrentLiabilities' => $balanceSheetStatement->getOtherCurrentLiabilities(),
+                'totalCurrentLiabilities' => $balanceSheetStatement->getTotalCurrentLiabilities(),
+                'longTermDebt' => $balanceSheetStatement->getLongTermDebt(),
+                'deferredRevenueNonCurrent' => $balanceSheetStatement->getDeferredRevenueNonCurrent(),
+                'deferredTaxLiabilitiesNonCurrent' => $balanceSheetStatement->getDeferredTaxLiabilitiesNonCurrent(),
+                'otherNonCurrentLiabilities' => $balanceSheetStatement->getOtherNonCurrentLiabilities(),
+                'totalNonCurrentLiabilities' => $balanceSheetStatement->getTotalNonCurrentLiabilities(),
+                'otherLiabilities' => $balanceSheetStatement->getOtherLiabilities(),
+                'capitalLeaseObligations' => $balanceSheetStatement->getCapitalLeaseObligations(),
+                'totalLiabilities' => $balanceSheetStatement->getTotalLiabilities(),
+                'preferredStock' => $balanceSheetStatement->getPreferredStock(),
+                'commonStock' => $balanceSheetStatement->getCommonStock(),
+                'retainedEarnings' => $balanceSheetStatement->getRetainedEarnings(),
+                'accumulatedOtherComprehensiveIncomeLoss' => $balanceSheetStatement->getAccumulatedOtherComprehensiveIncomeLoss(),
+                'othertotalStockholdersEquity' => $balanceSheetStatement->getOthertotalStockholdersEquity(),
+                'totalStockholdersEquity' => $balanceSheetStatement->getTotalStockholdersEquity(),
+                'totalEquity' => $balanceSheetStatement->getTotalEquity(),
+                'totalLiabilitiesAndStockholdersEquity' => $balanceSheetStatement->getTotalLiabilitiesAndStockholdersEquity(),
+                'minorityInterest' => $balanceSheetStatement->getMinorityInterest(),
+                'totalLiabilitiesAndTotalEquity' => $balanceSheetStatement->getTotalLiabilitiesAndTotalEquity(),
+                'totalInvestments' => $balanceSheetStatement->getTotalInvestments(),
+                'totalDebt' => $balanceSheetStatement->getTotalDebt(),
+                'netDebt' => $balanceSheetStatement->getNetDebt(),
+                'link' => $balanceSheetStatement->getLink(),
+                'finalLink' => $balanceSheetStatement->getFinalLink(),
+            ];
+
+            if($balanceSheetStatementDAO->exists($idStock, $balanceSheetStatement->getCalendarYear(), $balanceSheetStatement->getPeriod())) {
+                $filter_rules = [
+                    [$idStock, 'equal', 'idStock'],
+                    ['calendarYear', 'equal', $balanceSheetStatement->getCalendarYear()],
+                    ['timePeriod', 'equal', $balanceSheetStatement->getPeriod()]
+                ];
+                $idBalanceSheetStatement = $balanceSheetStatementDAO->setColumns('idBalanceSheetStatement')->getMultiple(filter_rules: $filter_rules)->getValueAsInt('idBalanceSheetStatement');
+                $incomeStatementData['idBalanceSheetStatement'] = $idBalanceSheetStatement;
+                $recordSet = $balanceSheetStatementDAO->update($incomeStatementData);
+            }
+            else {
+                $recordSet = $balanceSheetStatementDAO->insert($balanceSheetStatementData);
+            }
+            if($lastError = $recordSet->getLastError()) {
+                throw new RuntimeException($lastError['message'], $lastError['code']);
+            }
+        }
+    };
+
+    $importBalanceSheetStatement($balanceSheetStatementAnnual, $idStock, $symbol);
+    $importBalanceSheetStatement($balanceSheetStatementQuarterly, $idStock, $symbol);
 }
 
 function refreshShareFloat(int|string $symbol): void
