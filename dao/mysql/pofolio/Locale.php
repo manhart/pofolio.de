@@ -5,7 +5,7 @@
  * @copyright Copyright (c) 2023 Alexander Manhart IT
  * @authors Alexander Manhart
  *
- * Language.php created on 09.10.23, 22:57.
+ * Locale.php created on 09.10.23, 22:57.
  */
 
 namespace pofolio\dao\mysql\pofolio;

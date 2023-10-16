@@ -5,7 +5,7 @@
  * @copyright Copyright (c) 2023 Alexander Manhart IT
  * @authors Alexander Manhart
  *
- * Exchange.php created on 26.09.23, 00:18.
+ * Exchange.php created on 09.10.23, 17:01.
  */
 
 namespace pofolio\dao\mysql\pofolio;
