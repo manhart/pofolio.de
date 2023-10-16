@@ -17,6 +17,7 @@ use pofolio\dao\mysql\pofolio\Company;
 use pofolio\dao\mysql\pofolio\Country;
 use pofolio\dao\mysql\pofolio\Currency;
 use pofolio\dao\mysql\pofolio\Dividend;
+use pofolio\dao\mysql\pofolio\DividendCalendar;
 use pofolio\dao\mysql\pofolio\Exchange;
 use pofolio\dao\mysql\pofolio\HistoricalPrice;
 use pofolio\dao\mysql\pofolio\IncomeStatement;
@@ -99,13 +100,17 @@ $client = FmpApiClient::getInstance();
 
 
 
-$symbols = ['INTC', 'HOT.DE', '639.DE', 'EA', 'NEM.DE', 'DE', 'AZN.L', 'TMV.DE', 'LMT', 'BHP', 'UBER', '3RB.DE', '2587.T', 'CVS', 'TPE.DE', 'SHF.DE',
+$symbols = ['TNC', 'CRM', 'TEVA.TA', 'MBB.DE', 'KWS.DE', 'UHS', 'POS.VI', 'HIMS', 'VRNS', 'APH', 'COP.DE', 'UTDI.DE', 'AEM', 'MYTAY', 'UNA.AS', 'HEIA.AS', 'CMC.DE', '0066.HK', 'DG.PA', 'TSM', 'EXTR', 'NOEJ.DE', 'IBC3.F', 'IS3N.DE',
+    'IBC3.DE', 'ABR', 'BNR.DE', 'PRX.AS', 'KRN.DE', 'WDC', 'LSG.OL', 'HFG.DE', 'CTSH', 'SWKS', 'DBX', 'SSD', 'EUZ.DE', '690D.DE', 'BDT.DE', 'GIS',
+    'PND.F', 'MOWI.OL', 'RI.PA', 'MAR', 'INTC', 'HOT.DE', '639.DE', 'EA', 'NEM.DE', 'DE', 'AZN.L', 'TMV.DE', 'LMT', 'BHP', 'UBER', '3RB.DE', '2587.T',
+    'CVS', 'TPE.DE', 'SHF.DE', 'ABEA.DE', 'AMD', 'PEP', 'SAP.DE', 'MKL', 'KHC', 'STO3.DE', 'JNJ', 'SHELL.AS', 'AMS.MC', 'FRA.DE', 'IBM', '8TRA.DE',
     'DHI', 'DEMANT.CO', 'QSR', 'PANW', 'MCD', '5108.T', 'ORCL', 'QLYS', '11B.WA', 'MAR', 'PDX.ST', 'NTNX', 'NKE', 'TOM.OL', 'TTE.PA', 'AVGO', 'NEM',
-    'ALV.DE', 'NOC', '0941.HK', 'IAC', '3662.HK', 'CHGG', 'APPS', 'COMP', 'LPSN', 'FNKO', 'FSLY', 'COIN', 'CRNC', 'SMWB', 'ZBRA', 'ILMN', 'MPW',
+    'ALV.DE', 'NOC', '0941.HK', 'IAC', '3662.HK', 'CHGG', 'APPS', 'COMP', 'LPSN', 'FNKO', 'FSLY', 'COIN', 'CRNC', 'SMWB', 'ZBRA', 'ILMN', 'MPW', 'EOAN.DE',
     'BPOST.BR', '5CP.SI', 'CDR.WA', 'AMS.SW', '013A.F', '1044.HK', 'M0YN.DE', 'MRK.DE', 'DHL.DE', 'CCC3.DE', 'AIR.DE', 'BAKKA.OL', 'AMGN', 'GFT.DE',
     'SAM', 'PAYX', 'ECV.DE', 'WPM', 'META', 'SIE.DE', 'INVE-A.ST', 'INVE-B.ST', 'JKHY', 'PSTG', 'MUV2.DE', 'SALM.OL', 'INFY.NS', 'GOOGL', 'MTX.DE',
     'ATS.VI', 'FDS', 'NXU.DE', 'ADSK', 'AAD.DE', 'BC8.DE', 'MDO.DE', 'ANET', 'EVD.DE', 'ZS', 'CMG', 'MSFT', 'ADBE', 'NVO', 'NOVO-B.CO', 'NOVC.DE',
-    'DMRE.DE', 'KTN.DE', 'TTD', 'NVDA', 'AMZN'];
+    'DMRE.DE', 'KTN.DE', 'TTD', 'NVDA', 'AMZN', '9618.HK'];
+
 foreach($symbols as $symbol) {
     try {
         stockImporter($client, $symbol);
@@ -122,11 +127,14 @@ foreach($symbols as $symbol) {
     historicalPriceImporter($client, $symbol);
     incomeStatementImporter($client, $symbol);
     balanceSheetStatementImporter($client, $symbol);
-//    break;
+    break;
 }
 
 
 delistedCompaniesImporter($client);
+dividendCalendarImporter($client, new \DateTime('-1 month'), new \DateTime('+2 month'));
+dividendCalendarImporter($client, new \DateTime('+2 month'), new \DateTime('+4 month'));
+dividendCalendarImporter($client, new \DateTime('+4 month'), new \DateTime('+6 month'));
 die();
 $stockList = $client->getStockList();
 
@@ -151,6 +159,7 @@ foreach($stockList as $stock) {
     upgradesDowngradesImporter($client, $idStock);
     historicalPriceImporter($client, $idStock);
     incomeStatementImporter($client, $idStock);
+    balanceSheetStatementImporter($client, $idStock);
 
     refreshShareFloat($idStock);
 
@@ -263,7 +272,10 @@ function stockImporter(FmpApiClient $client, string $symbol, ?string $type = nul
 
     // Country
     $country = $Profile->getCountry();
-    $idCountry = Country::create()->setColumns('idCountry')->get($country, 'isoCode')->getValueAsInt('idCountry') ?: null;
+    $idCountry = null;
+    if($country) {
+        $idCountry = Country::create()->setColumns('idCountry')->get($country, 'isoCode')->getValueAsInt('idCountry') ?: null;
+    }
 
     // Stock
     $stockData = [
@@ -297,7 +309,12 @@ function stockImporter(FmpApiClient $client, string $symbol, ?string $type = nul
         throw new RuntimeException($lastError['message']);
     }
 
-    [$fiscalYearEndMonth, $fiscalYearEndDay] = \explode('-', $CompanyCoreInformation->getFiscalYearEnd());
+    $fiscalYearEnd = $CompanyCoreInformation->getFiscalYearEnd();
+    $fiscalYearEndDay = null;
+    $fiscalYearEndMonth = null;
+    if($fiscalYearEnd) {
+        [$fiscalYearEndMonth, $fiscalYearEndDay] = \explode('-', $fiscalYearEnd);
+    }
 
     // Company
     $companyData = [
@@ -426,6 +443,7 @@ function dividendImporter(FmpApiClient $client, int|string $symbol): void
             'recordDate' => $stockDividend->getRecordDate(),
             'paymentDate' => $stockDividend->getPaymentDate(),
             'declarationDate' => $stockDividend->getDeclarationDate(),
+            'label' => $stockDividend->getLabel(),
         ];
 
         if(!$DividendDAO->exists($idStock, $stockDividend->getDate())) {
@@ -433,6 +451,45 @@ function dividendImporter(FmpApiClient $client, int|string $symbol): void
             if($lastError = $recordSet->getLastError()) {
                 throw new RuntimeException($lastError['message'], $lastError['code']);
             }
+        }
+    }
+}
+
+function dividendCalendarImporter(FmpApiClient $client, \DateTimeInterface $from, \DateTimeInterface $to): void
+{
+    $dividendCalendarDAO = DividendCalendar::create();
+    $dividendCalendarResponse = $client->getStockDividendCalendar($from, $to);
+    echo 'DividendCalendar: '.LINE_BREAK;
+    $dividendCalendarResponse->dump();
+
+    $stockDAO = Stock::create()->setColumns('idStock');
+    foreach($dividendCalendarResponse as $ignored) {
+        $symbol = $dividendCalendarResponse->getSymbol();
+        $idStock = $stockDAO->get($symbol, 'symbol')->getValueAsInt('idStock');
+        if(!$idStock) { // not imported yet
+            continue;
+        }
+        $dividendCalendarData = [
+            'idStock' => $idStock,
+            'date' => $dividendCalendarResponse->getDate(),
+            'adjDividend' => $dividendCalendarResponse->getAdjDividend(),
+            'dividend' => $dividendCalendarResponse->getDividend(),
+            'recordDate' => $dividendCalendarResponse->getRecordDate(),
+            'paymentDate' => $dividendCalendarResponse->getPaymentDate(),
+            'declarationDate' => $dividendCalendarResponse->getDeclarationDate(),
+            'label' => $dividendCalendarResponse->getLabel(),
+        ];
+
+        if(!$dividendCalendarDAO->exists($idStock, $dividendCalendarResponse->getDate())) {
+            $recordSet = $dividendCalendarDAO->insert($dividendCalendarData);
+        }
+        else {
+            $idDividendCalendar = $dividendCalendarDAO->setColumns('idDividendCalendar')->getMultiple(filter_rules: [['idStock', 'equal', $idStock], ['date', 'equal', $dividendCalendarResponse->getDate()]])->getValueAsInt('idDividendCalendar');
+            $dividendCalendarData['idDividendCalendar'] = $idDividendCalendar;
+            $recordSet = $dividendCalendarDAO->update($dividendCalendarData);
+        }
+        if($lastError = $recordSet->getLastError()) {
+            throw new RuntimeException($lastError['message'], $lastError['code']);
         }
     }
 }
@@ -583,10 +640,17 @@ function incomeStatementImporter(FmpApiClient $client, string $symbol): void
                 $EPSDiluted = 1.06;
             if($symbol === 'BHP' && $calendarYear === 2013 && $EPSDiluted === 7588.47)
                 $EPSDiluted = $EPS;
-            // if the difference between EPS and EPSDiluted is greater than 1, then there is a problem with the data
-            if($EPS && $EPSDiluted && \abs($EPS - $EPSDiluted) > 10) {
-                throw new RuntimeException("EPS and EPSDiluted are very different $EPS vs $EPSDiluted for symbol $symbol in $calendarYear-$period!");
+
+            // if the difference between EPS and EPSDiluted is greater than 10 percent, then there is a problem with the data
+            if($EPS && $EPSDiluted) {
+                $difference = \abs($EPS - $EPSDiluted);
+                $average = ($EPS + $EPSDiluted) / 2;
+                $percent = $difference / $average * 100;
+                if($percent > 10) {
+                    throw new RuntimeException("EPS and EPSDiluted are very different $EPS vs $EPSDiluted for symbol $symbol in $calendarYear-$period!");
+                }
             }
+
             $EBITDARatio = $incomeStatement->getEBITDARatio();
 
             $incomeStatementData = [

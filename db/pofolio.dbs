@@ -175,6 +175,7 @@
 			<column name="recordDate" type="DATE" jt="91" />
 			<column name="paymentDate" type="DATE" jt="91" />
 			<column name="declarationDate" type="DATE" jt="91" />
+			<column name="label" type="VARCHAR" length="32" jt="12" />
 			<column name="updated" type="DATETIME" jt="93" >
 				<column_options><![CDATA[ON UPDATE CURRENT_TIMESTAMP]]></column_options>
 			</column>
@@ -192,6 +193,35 @@
 				<fk_column name="idStock" pk="idStock" />
 			</fk>
 			<options><![CDATA[engine=InnoDB]]></options>
+		</table>
+		<table name="DividendCalendar" prior="Dividend_0" >
+			<column name="idDividendCalendar" prior="idDividend" type="BIGINT" jt="-5" mandatory="y" unsigned="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="idStock" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
+			<column name="date" type="DATE" jt="91" mandatory="y" />
+			<column name="adjDividend" type="DECIMAL" length="17" decimal="10" jt="3" mandatory="y" unsigned="y" />
+			<column name="dividend" type="DECIMAL" length="17" decimal="10" jt="3" mandatory="y" unsigned="y" />
+			<column name="recordDate" type="DATE" jt="91" />
+			<column name="paymentDate" type="DATE" jt="91" />
+			<column name="declarationDate" type="DATE" jt="91" />
+			<column name="label" type="VARCHAR" length="32" jt="12" />
+			<column name="updated" type="DATETIME" jt="93" >
+				<column_options><![CDATA[ON UPDATE CURRENT_TIMESTAMP]]></column_options>
+			</column>
+			<column name="created" type="DATETIME" jt="93" mandatory="y" >
+				<defo><![CDATA[current_timestamp()]]></defo>
+			</column>
+			<index name="pk_Dividend_0" unique="PRIMARY_KEY" >
+				<column name="idDividendCalendar" />
+			</index>
+			<index name="ui_Dividend_date_0" unique="UNIQUE_KEY" >
+				<column name="idStock" />
+				<column name="date" />
+			</index>
+			<fk name="fk_dividend_stock_0" to_schema="pofolio" to_table="Stock" >
+				<fk_column name="idStock" pk="idStock" />
+			</fk>
 		</table>
 		<table name="Exchange" prior="table" >
 			<column name="idExchange" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" >
@@ -563,21 +593,22 @@
 	</schema>
 	<connector name="MariaDb" database="MariaDb" driver_class="org.mariadb.jdbc.Driver" driver_jar="mariadb-java-client-3.2.0.jar" driver_desc="Standard" host="dev.local" port="3306" instance="pofolio" user="vagrant" useSystemProxy="false" />
 	<layout name="financialmodelingprep" id="Layout-289" joined_routing="y" show_relation="columns" >
-		<entity schema="pofolio" name="BalanceSheetStatement" color="C1D8EE" x="432" y="976" />
-		<entity schema="pofolio" name="Company" color="C1D8EE" x="640" y="256" />
-		<entity schema="pofolio" name="Currency" color="C1D8EE" x="48" y="816" />
-		<entity schema="pofolio" name="Dividend" color="C1D8EE" x="352" y="96" />
-		<entity schema="pofolio" name="Exchange" color="C1D8EE" x="48" y="416" />
-		<entity schema="pofolio" name="HistoricalPrice" color="C1D8EE" x="48" y="80" />
-		<entity schema="pofolio" name="IncomeStatement" color="C1D8EE" x="80" y="976" />
-		<entity schema="pofolio" name="Industry" color="C1D8EE" x="48" y="560" />
-		<entity schema="pofolio" name="PriceTarget" color="C1D8EE" x="656" y="672" />
-		<entity schema="pofolio" name="SIC" color="C1D8EE" x="848" y="256" />
-		<entity schema="pofolio" name="Sector" color="C1D8EE" x="48" y="688" />
-		<entity schema="pofolio" name="ShareFloat" color="C1D8EE" x="640" y="48" />
-		<entity schema="pofolio" name="Stock" color="C1D8EE" x="336" y="432" />
-		<entity schema="pofolio" name="UpgradesDowngrades" color="C1D8EE" x="896" y="656" />
-		<callout x="1168" y="128" pointer="Round" >
+		<entity schema="pofolio" name="BalanceSheetStatement" color="C1D8EE" x="432" y="1184" />
+		<entity schema="pofolio" name="Company" color="C1D8EE" x="640" y="464" />
+		<entity schema="pofolio" name="Currency" color="C1D8EE" x="48" y="1024" />
+		<entity schema="pofolio" name="Dividend" color="C1D8EE" x="352" y="304" />
+		<entity schema="pofolio" name="DividendCalendar" color="3986C1" x="352" y="48" />
+		<entity schema="pofolio" name="Exchange" color="C1D8EE" x="48" y="624" />
+		<entity schema="pofolio" name="HistoricalPrice" color="C1D8EE" x="48" y="288" />
+		<entity schema="pofolio" name="IncomeStatement" color="C1D8EE" x="80" y="1184" />
+		<entity schema="pofolio" name="Industry" color="C1D8EE" x="48" y="768" />
+		<entity schema="pofolio" name="PriceTarget" color="C1D8EE" x="656" y="880" />
+		<entity schema="pofolio" name="SIC" color="C1D8EE" x="848" y="464" />
+		<entity schema="pofolio" name="Sector" color="C1D8EE" x="48" y="896" />
+		<entity schema="pofolio" name="ShareFloat" color="C1D8EE" x="640" y="256" />
+		<entity schema="pofolio" name="Stock" color="C1D8EE" x="336" y="640" />
+		<entity schema="pofolio" name="UpgradesDowngrades" color="C1D8EE" x="896" y="864" />
+		<callout x="1168" y="336" pointer="Round" >
 			<comment><![CDATA[This is a layout - a diagram with tools.
 - Right-click the layout to create new tables.
 - Double-click table headers to edit.
