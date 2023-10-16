@@ -11,7 +11,9 @@
 namespace pofolio\classes\FMP\Client;
 
 use pofolio\classes\FMP\Response\CompanyCoreInformation;
+use pofolio\classes\FMP\Response\DelistedCompanies;
 use pofolio\classes\FMP\Response\HistoricalPrice;
+use pofolio\classes\FMP\Response\IncomeStatement;
 use pofolio\classes\FMP\Response\PriceTarget;
 use pofolio\classes\FMP\Response\Profile;
 use pofolio\classes\FMP\Response\ShareFloat;
@@ -163,6 +165,16 @@ class FmpApiClient
     public function getCompanyCoreInformation(string $symbol): CompanyCoreInformation
     {
         return CompanyCoreInformation::create($this, symbol: $symbol);
+    }
+
+    public function getDelistedCompanies(): DelistedCompanies
+    {
+        return DelistedCompanies::create($this);
+    }
+
+    public function getIncomeStatement(string $symbol, ?string $period = IncomeStatement::PERIOD_ANNUAL, ?string $dataType = 'json', ?int $limit = null): IncomeStatement
+    {
+        return IncomeStatement::create($this, $symbol, limit: $limit, period: $period);
     }
 
     public function getLastEndpointURL(): string

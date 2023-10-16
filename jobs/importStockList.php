@@ -18,6 +18,7 @@ use pofolio\dao\mysql\pofolio\Currency;
 use pofolio\dao\mysql\pofolio\Dividend;
 use pofolio\dao\mysql\pofolio\Exchange;
 use pofolio\dao\mysql\pofolio\HistoricalPrice;
+use pofolio\dao\mysql\pofolio\IncomeStatement;
 use pofolio\dao\mysql\pofolio\Industry;
 use pofolio\dao\mysql\pofolio\PriceTarget;
 use pofolio\dao\mysql\pofolio\Sector;
@@ -97,14 +98,33 @@ $client = FmpApiClient::getInstance();
 
 
 
-$symbol = 'KTN.DE';
-stockImporter($client, $symbol);
-shareFloatImporter($client, $symbol);
-dividendImporter($client, $symbol);
-priceTargetImporter($client, $symbol);
-upgradesDowngradesImporter($client, $symbol);
-historicalPriceImporter($client, $symbol);
+$symbols = [/*'INTC', 'HOT.DE', '639.DE', 'EA', 'NEM.DE', 'DE', 'AZN.L', 'TMV.DE', 'LMT', 'BHP', 'UBER', '3RB.DE', '2587.T', 'CVS', 'TPE.DE', 'SHF.DE',
+    'DHI', 'DEMANT.CO', 'QSR', 'PANW', 'MCD', '5108.T', 'ORCL', 'QLYS', '11B.WA', 'MAR', 'PDX.ST', 'NTNX', 'NKE', 'TOM.OL', 'TTE.PA', 'AVGO', 'NEM',
+    'ALV.DE', 'NOC', '0941.HK', 'IAC', '3662.HK', 'CHGG', 'APPS', 'COMP', 'LPSN', 'FNKO', 'FSLY', 'COIN', 'CRNC', 'SMWB', 'ZBRA', 'ILMN', 'MPW',
+    'BPOST.BR', '5CP.SI', 'CDR.WA', 'AMS.SW', '013A.F', '1044.HK', 'M0YN.DE', 'MRK.DE', 'DHL.DE', 'CCC3.DE', 'AIR.DE', 'BAKKA.OL', 'AMGN', 'GFT.DE',
+    'SAM', 'PAYX', 'ECV.DE',*/ 'WPM', 'META', 'SIE.DE', 'INVE-A.ST', 'INVE-B.ST', 'JKHY', 'PSTG', 'MUV2.DE', 'SALM.OL', 'INFY.NS', 'GOOGL', 'MTX.DE',
+    'ATS.VI', 'FDS', 'NXU.DE', 'ADSK', 'AAD.DE', 'BC8.DE', 'MDO.DE', 'ANET', 'EVD.DE', 'ZS', 'CMG', 'MSFT', 'ADBE', 'NVO', 'NOVO-B.CO', 'NOVC.DE',
+    'DMRE.DE', 'KTN.DE', 'TTD', 'NVDA', 'AMZN'];
+foreach($symbols as $symbol) {
+    try {
+        stockImporter($client, $symbol);
+    }
+    catch(RuntimeException $e) {
+        echo $e->getMessage().LINE_BREAK;
+        continue;
+    }
 
+    shareFloatImporter($client, $symbol);
+    dividendImporter($client, $symbol);
+    priceTargetImporter($client, $symbol);
+    upgradesDowngradesImporter($client, $symbol);
+    historicalPriceImporter($client, $symbol);
+    incomeStatementImporter($client, $symbol);
+//    break;
+}
+
+
+delistedCompaniesImporter($client);
 die();
 $stockList = $client->getStockList();
 
@@ -144,6 +164,7 @@ foreach($stockList as $stock) {
  * @param string|null $exchangeShortName
  * @param string|null $exchange
  * @return int
+ * @throws RuntimeException
  */
 function stockImporter(FmpApiClient $client, string $symbol, ?string $type = null, ?string $exchangeShortName = null, ?string $exchange = null): int
 {
@@ -158,6 +179,10 @@ function stockImporter(FmpApiClient $client, string $symbol, ?string $type = nul
 
     echo 'Profile for: '.$symbol.LINE_BREAK;
     $Profile->dump();
+
+    if(!$Profile->hasResponse()) {
+        throw new RuntimeException("No profile data available for symbol $symbol");
+    }
 
     $CompanyCoreInformation = $client->getCompanyCoreInformation($symbol);
     echo 'CompanyCoreInformation for: '.$symbol.LINE_BREAK;
@@ -352,9 +377,9 @@ function shareFloatImporter(FmpApiClient $client, int|string $symbol): void
         $shareFloatData = [
             'idStock' => $idStock,
             'date' => $ShareFloat->getDate(),
-            'floatShares' => $ShareFloat->getFloatShares(),
-            'outstandingShares' => $ShareFloat->getOutstandingShares(),
-            'freeFloat' => $ShareFloat->getFreeFloat(),
+            'floatShares' => $lastFloatShares ??= $ShareFloat->getFloatShares(),
+            'outstandingShares' => $lastOutstandingShares ??= $ShareFloat->getOutstandingShares(),
+            'freeFloat' => $lastFreeFloat ??= $ShareFloat->getFreeFloat(),
             'source' => $ShareFloat->getSource(),
         ];
 
@@ -364,6 +389,19 @@ function shareFloatImporter(FmpApiClient $client, int|string $symbol): void
                 throw new RuntimeException($lastError['message'], $lastError['code']);
             }
         }
+    }
+
+    // update stock
+    $stockDAO = Stock::create();
+    $stockData = [
+        'idStock' => $idStock,
+        'lastFreeFloat' => $lastFreeFloat ?? null,
+        'lastFloatShares' => $lastFloatShares ?? null,
+        'lastOutstandingShares' => $lastOutstandingShares ?? null,
+    ];
+    $recordSet = $stockDAO->update($stockData);
+    if($lastError = $recordSet->getLastError()) {
+        throw new RuntimeException($lastError['message'], $lastError['code']);
     }
 }
 
@@ -502,6 +540,116 @@ function historicalPriceImporter(FmpApiClient $client, string $symbol): void
     }
 }
 
+function incomeStatementImporter(FmpApiClient $client, string $symbol): void
+{
+    [$idStock, $symbol] = extractSymbol($symbol);
+    $incomeStatementAnnual = $client->getIncomeStatement($symbol);
+    echo 'IncomeStatement for: '.$symbol.LINE_BREAK;
+    $incomeStatementAnnual->dump();
+
+    $incomeStatementQuarter = $client->getIncomeStatement($symbol, \pofolio\classes\FMP\Response\IncomeStatement::PERIOD_QUARTER);
+    // dump not necessary
+
+    $importIncomeStatement = static function(
+        \pofolio\classes\FMP\Response\IncomeStatement $incomeStatement,
+        mixed $idStock,
+        string $symbol
+    ): void {
+        $incomeStatementDAO = IncomeStatement::create();
+        $currencyDAO = Currency::create();
+        foreach($incomeStatement as $ignored) {
+
+            $idReportedCurrency = $currencyDAO->setColumns('idCurrency')->get($incomeStatement->getReportedCurrency(),
+                'currency')->getValueAsInt('idCurrency') ?:
+                Stock::create()->setColumns('idCurrency')->get($idStock, 'idStock')->getValueAsInt('idCurrency');
+
+            $periodOrder = match ($incomeStatement->getPeriod()) {
+                IncomeStatement::PERIOD_QUARTER1 => 1,
+                IncomeStatement::PERIOD_QUARTER2 => 2,
+                IncomeStatement::PERIOD_QUARTER3 => 3,
+                IncomeStatement::PERIOD_QUARTER4 => 4,
+                IncomeStatement::PERIOD_FISCAL_YEAR => 0,
+                default => throw new RuntimeException('Unknown period: ' . $incomeStatement->getPeriod()),
+            };
+
+            $calendarYear = $incomeStatement->getCalendarYear();
+            $period = $incomeStatement->getPeriod();
+            $EPS = $incomeStatement->getEPS();
+            $EPSDiluted = $incomeStatement->getEPSDiluted();
+            if($symbol === 'BHP' && $calendarYear === 2016 && $EPSDiluted === 1063134.16)
+                $EPSDiluted = 1.06;
+            if($symbol === 'BHP' && $calendarYear === 2013 && $EPSDiluted === 7588.47)
+                $EPSDiluted = $EPS;
+            // if the difference between EPS and EPSDiluted is greater than 1, then there is a problem with the data
+            if($EPS && $EPSDiluted && \abs($EPS - $EPSDiluted) > 10) {
+                throw new RuntimeException("EPS and EPSDiluted are very different $EPS vs $EPSDiluted for symbol $symbol in $calendarYear-$period!");
+            }
+            $EBITDARatio = $incomeStatement->getEBITDARatio();
+
+            $incomeStatementData = [
+                'idStock' => $idStock,
+                'date' => $incomeStatement->getDate(),
+                'idReportedCurrency' => $idReportedCurrency,
+                'fillingDate' => $incomeStatement->getFillingDate(),
+                'acceptedDate' => $incomeStatement->getAcceptedDate(),
+                'calendarYear' => $calendarYear,
+                'timePeriod' => $period,
+                'periodOrder' => $periodOrder,
+                'revenue' => $incomeStatement->getRevenue(),
+                'costOfRevenue' => $incomeStatement->getCostOfRevenue(),
+                'grossProfit' => $incomeStatement->getGrossProfit(),
+                'grossProfitRatio' => $incomeStatement->getGrossProfitRatio(),
+                'researchAndDevelopmentExpenses' => $incomeStatement->getResearchAndDevelopmentExpenses(),
+                'generalAndAdministrativeExpenses' => $incomeStatement->getGeneralAndAdministrativeExpenses(),
+                'sellingAndMarketingExpenses' => $incomeStatement->getSellingAndMarketingExpenses(),
+                'sellingGeneralAndAdministrativeExpenses' => $incomeStatement->getSellingGeneralAndAdministrativeExpenses(),
+                'otherExpenses' => $incomeStatement->getOtherExpenses(),
+                'operatingExpenses' => $incomeStatement->getOperatingExpenses(),
+                'costAndExpenses' => $incomeStatement->getCostAndExpenses(),
+                'interestIncome' => $incomeStatement->getInterestIncome(),
+                'interestExpense' => $incomeStatement->getInterestExpense(),
+                'depreciationAndAmortization' => $incomeStatement->getDepreciationAndAmortization(),
+                'EBITDA' => $incomeStatement->getEBITDA(),
+                'EBITDARatio' => $EBITDARatio,
+                'operatingIncome' => $incomeStatement->getOperatingIncome(),
+                'operatingIncomeRatio' => $incomeStatement->getOperatingIncomeRatio(),
+                'totalOtherIncomeExpensesNet' => $incomeStatement->getTotalOtherIncomeExpensesNet(),
+                'incomeBeforeTax' => $incomeStatement->getIncomeBeforeTax(),
+                'incomeBeforeTaxRatio' => $incomeStatement->getIncomeBeforeTaxRatio(),
+                'incomeTaxExpense' => $incomeStatement->getIncomeTaxExpense(),
+                'netIncome' => $incomeStatement->getNetIncome(),
+                'netIncomeRatio' => $incomeStatement->getNetIncomeRatio(),
+                'EPS' => $EPS,
+                'EPSDiluted' => $EPSDiluted,
+                'weightedAverageShsOut' => $incomeStatement->getWeightedAverageShsOut(),
+                'weightedAverageShsOutDil' => $incomeStatement->getWeightedAverageShsOutDil(),
+                'link' => $incomeStatement->getLink(),
+                'finalLink' => $incomeStatement->getFinalLink(),
+            ];
+
+            if($incomeStatementDAO->exists($idStock, $incomeStatement->getCalendarYear(), $incomeStatement->getPeriod())) {
+                $filter_rules = [
+                    [$idStock, 'equal', 'idStock'],
+                    ['calendarYear', 'equal', $incomeStatement->getCalendarYear()],
+                    ['timePeriod', 'equal', $incomeStatement->getPeriod()]
+                ];
+                $idIncomeStatement = $incomeStatementDAO->setColumns('idIncomeStatement')->getMultiple(filter_rules: $filter_rules)->getValueAsInt('idIncomeStatement');
+                $incomeStatementData['idIncomeStatement'] = $idIncomeStatement;
+                $recordSet = $incomeStatementDAO->update($incomeStatementData);
+            }
+            else {
+                $recordSet = $incomeStatementDAO->insert($incomeStatementData);
+            }
+            if($lastError = $recordSet->getLastError()) {
+                throw new RuntimeException($lastError['message'], $lastError['code']);
+            }
+        }
+    };
+
+    $importIncomeStatement($incomeStatementAnnual, $idStock, $symbol);
+    $importIncomeStatement($incomeStatementQuarter, $idStock, $symbol);
+}
+
 function refreshShareFloat(int|string $symbol): void
 {
     [$idStock, $symbol] = extractSymbol($symbol);
@@ -521,6 +669,31 @@ function refreshShareFloat(int|string $symbol): void
         ];
         $recordSet = $stockDAO->update($stockData);
         if($lastError = $recordSet->getLastError()) {
+            throw new RuntimeException($lastError['message'], $lastError['code']);
+        }
+    }
+}
+
+function delistedCompaniesImporter(FmpApiClient $client): void
+{
+    $delistedCompanies = $client->getDelistedCompanies();
+    echo 'DelistedCompanies: '.LINE_BREAK;
+    $delistedCompanies->dump();
+
+    foreach($delistedCompanies as $ignored) {
+        $symbol = $delistedCompanies->getSymbol();
+        $stock = Stock::create();
+        if(!$stock->exists($symbol))
+            continue;
+
+        $idStock = $stock->setColumns('idStock')->get($symbol, 'symbol')->getValueAsInt('idStock');
+
+        $delistedCompaniesData = [
+            'idStock' => $idStock,
+            'delistedDate' => $delistedCompanies->getDelistedDate(),
+        ];
+
+        if($lastError = $stock->update($delistedCompaniesData)->getLastError()) {
             throw new RuntimeException($lastError['message'], $lastError['code']);
         }
     }
