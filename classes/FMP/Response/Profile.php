@@ -182,22 +182,22 @@ class Profile extends Response
 
     public function isEtf(): bool
     {
-        return $this->getResponseValue('isEtf');
+        return $this->getResponseValueAsBool('isEtf');
     }
 
     public function isActivelyTrading(): bool
     {
-        return $this->getResponseValue('isActivelyTrading');
+        return $this->getResponseValueAsBool('isActivelyTrading');
     }
 
     public function isAdr(): bool
     {
-        return $this->getResponseValue('isAdr');
+        return $this->getResponseValueAsBool('isAdr');
     }
 
     public function isFund(): bool
     {
-        return $this->getResponseValue('isFund');
+        return $this->getResponseValueAsBool('isFund');
     }
 
     public function ipoDate(): ?string

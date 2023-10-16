@@ -19,7 +19,7 @@ class HistoricalPrice extends Response
     public function __construct(array $response)
     {
         $this->symbol = $response['symbol'] ?? '';
-        parent::__construct($response['historical']);
+        parent::__construct($response['historical'] ?? []);
     }
 
     public function getSymbol(): string

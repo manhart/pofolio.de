@@ -18,7 +18,7 @@
 			<column name="fiscalYearEndMonth" type="TINYINT" jt="-6" />
 			<column name="registrantName" type="VARCHAR" length="100" jt="12" />
 			<column name="taxIdentificationNumber" type="VARCHAR" length="32" jt="12" />
-			<column name="stateLocation" type="VARCHAR" length="2" jt="12" />
+			<column name="stateLocation" type="VARCHAR" length="3" jt="12" />
 			<column name="stateOfIncorporation" type="VARCHAR" length="2" jt="12" />
 			<column name="sicCode" type="SMALLINT" jt="5" unsigned="y" />
 			<column name="dcf" type="DECIMAL" length="10" decimal="2" jt="3" unsigned="y" />
@@ -165,6 +165,67 @@
 			</fk>
 			<options><![CDATA[engine=InnoDB]]></options>
 		</table>
+		<table name="IncomeStatement" >
+			<column name="idIncomeStatement" type="BIGINT" jt="-5" mandatory="y" unsigned="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="idStock" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
+			<column name="date" type="DATE" jt="91" mandatory="y" />
+			<column name="idReportedCurrency" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" />
+			<column name="fillingDate" type="DATE" jt="91" />
+			<column name="acceptedDate" type="DATETIME" jt="93" />
+			<column name="calendarYear" type="YEAR" length="4" jt="4" mandatory="y" unsigned="y" />
+			<column name="timePeriod" type="ENUM" jt="12" mandatory="y" >
+				<defo><![CDATA['FY']]></defo>
+				<enumeration><![CDATA['FY','Q1','Q2','Q3','Q4']]></enumeration>
+			</column>
+			<column name="periodOrder" type="SMALLINT" jt="5" mandatory="y" unsigned="y" />
+			<column name="revenue" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="costOfRevenue" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="grossProfit" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="grossProfitRatio" type="DECIMAL" length="14" decimal="10" jt="3" />
+			<column name="researchAndDevelopmentExpenses" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="generalAndAdministrativeExpenses" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="sellingAndMarketingExpenses" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="sellingGeneralAndAdministrativeExpenses" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="otherExpenses" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="operatingExpenses" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="costAndExpenses" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="interestIncome" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="interestExpense" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="depreciationAndAmortization" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="EBITDA" prior="ebitda" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="EBITDARatio" prior="ebitdaRatio" type="DECIMAL" length="17" decimal="10" jt="3" />
+			<column name="operatingIncome" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="operatingIncomeRatio" type="DECIMAL" length="17" decimal="10" jt="3" />
+			<column name="totalOtherIncomeExpensesNet" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="incomeBeforeTax" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="incomeBeforeTaxRatio" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="incomeTaxExpense" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="netIncome" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="netIncomeRatio" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="EPS" prior="eps" type="DECIMAL" length="7" decimal="2" jt="3" />
+			<column name="EPSDiluted" prior="epsdiluted" type="DECIMAL" length="7" decimal="2" jt="3" />
+			<column name="weightedAverageShsOut" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="weightedAverageShsOutDil" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="link" type="VARCHAR" length="512" jt="12" />
+			<column name="finalLink" type="VARCHAR" length="512" jt="12" />
+			<index name="pk_IncomeStatement" unique="PRIMARY_KEY" >
+				<column name="idIncomeStatement" />
+			</index>
+			<index name="ui_IncomeStatement" unique="UNIQUE_KEY" >
+				<column name="idStock" />
+				<column name="calendarYear" />
+				<column name="timePeriod" />
+			</index>
+			<fk name="fk_incomestatement_stock" to_schema="pofolio" to_table="Stock" >
+				<fk_column name="idStock" pk="idStock" />
+			</fk>
+			<fk name="fk_incomestatement_currency" to_schema="pofolio" to_table="Currency" >
+				<fk_column name="idReportedCurrency" pk="idCurrency" />
+			</fk>
+			<options><![CDATA[engine=InnoDB]]></options>
+		</table>
 		<table name="Industry" >
 			<column name="idIndustry" type="MEDIUMINT" jt="4" mandatory="y" >
 				<identity><![CDATA[AUTO_INCREMENT]]></identity>
@@ -205,6 +266,9 @@
 			</column>
 			<index name="pk_Locales" unique="PRIMARY_KEY" >
 				<column name="idLocale" />
+			</index>
+			<index name="fk_locale_country" unique="NORMAL" >
+				<column name="idCountry" />
 			</index>
 			<fk name="fk_locale_country" to_schema="pofolio" to_table="Country" >
 				<fk_column name="idCountry" pk="idCountry" />
@@ -323,11 +387,11 @@
 			<column name="CUSIP" type="VARCHAR" length="9" jt="12" >
 				<comment><![CDATA[Committee on Uniform Security Identification Procedures]]></comment>
 			</column>
-			<column name="delistedDate" type="DATE" jt="91" />
 			<column name="lastFloatShares" type="BIGINT" jt="-5" unsigned="y" />
 			<column name="lastOutstandingShares" prior="latestOutstandingShares" type="BIGINT" jt="-5" unsigned="y" />
 			<column name="lastFreeFloat" type="DECIMAL" length="17" decimal="14" jt="3" unsigned="y" />
 			<column name="ipoDate" type="DATE" jt="91" />
+			<column name="delistedDate" type="DATE" jt="91" />
 			<column name="updated" prior="modified" type="DATETIME" jt="93" >
 				<column_options><![CDATA[ON UPDATE CURRENT_TIMESTAMP]]></column_options>
 			</column>
@@ -357,6 +421,9 @@
 			</index>
 			<index name="fk_Stock_Sector" unique="NORMAL" >
 				<column name="idSector" />
+			</index>
+			<index name="fk_Stock_Country" unique="NORMAL" >
+				<column name="idCountry" />
 			</index>
 			<fk name="fk_Stock_Exchange" to_schema="pofolio" to_table="Exchange" >
 				<fk_column name="idExchange" pk="idExchange" />
@@ -413,19 +480,20 @@
 	</schema>
 	<connector name="MariaDb" database="MariaDb" driver_class="org.mariadb.jdbc.Driver" driver_jar="mariadb-java-client-3.2.0.jar" driver_desc="Standard" host="dev.local" port="3306" instance="pofolio" user="vagrant" useSystemProxy="false" />
 	<layout name="financialmodelingprep" id="Layout-289" joined_routing="y" show_relation="columns" >
-		<entity schema="pofolio" name="Company" color="C1D8EE" x="640" y="288" />
-		<entity schema="pofolio" name="Currency" color="C1D8EE" x="48" y="560" />
-		<entity schema="pofolio" name="Dividend" color="C1D8EE" x="368" y="64" />
+		<entity schema="pofolio" name="Company" color="C1D8EE" x="656" y="288" />
+		<entity schema="pofolio" name="Currency" color="C1D8EE" x="48" y="784" />
+		<entity schema="pofolio" name="Dividend" color="C1D8EE" x="352" y="64" />
 		<entity schema="pofolio" name="Exchange" color="C1D8EE" x="48" y="384" />
-		<entity schema="pofolio" name="HistoricalPrice" color="C1D8EE" x="64" y="48" />
-		<entity schema="pofolio" name="Industry" color="C1D8EE" x="80" y="736" />
-		<entity schema="pofolio" name="PriceTarget" color="C1D8EE" x="656" y="688" />
+		<entity schema="pofolio" name="HistoricalPrice" color="C1D8EE" x="48" y="48" />
+		<entity schema="pofolio" name="IncomeStatement" color="C1D8EE" x="336" y="864" />
+		<entity schema="pofolio" name="Industry" color="C1D8EE" x="48" y="528" />
+		<entity schema="pofolio" name="PriceTarget" color="C1D8EE" x="672" y="688" />
 		<entity schema="pofolio" name="SIC" color="C1D8EE" x="896" y="496" />
-		<entity schema="pofolio" name="Sector" color="C1D8EE" x="96" y="880" />
-		<entity schema="pofolio" name="ShareFloat" color="C1D8EE" x="640" y="64" />
-		<entity schema="pofolio" name="Stock" color="C1D8EE" x="352" y="400" />
-		<entity schema="pofolio" name="UpgradesDowngrades" color="C1D8EE" x="880" y="656" />
-		<callout x="1184" y="96" pointer="Round" >
+		<entity schema="pofolio" name="Sector" color="C1D8EE" x="48" y="656" />
+		<entity schema="pofolio" name="ShareFloat" color="C1D8EE" x="656" y="64" />
+		<entity schema="pofolio" name="Stock" color="C1D8EE" x="336" y="400" />
+		<entity schema="pofolio" name="UpgradesDowngrades" color="C1D8EE" x="672" y="976" />
+		<callout x="1168" y="96" pointer="Round" >
 			<comment><![CDATA[This is a layout - a diagram with tools.
 - Right-click the layout to create new tables.
 - Double-click table headers to edit.

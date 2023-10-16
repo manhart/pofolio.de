@@ -18,7 +18,7 @@ use pofolio\classes\FMP\Factory\FactoryInterface;
 use Throwable;
 use function json_decode;
 
-class Response implements ResponseInterface, FactoryInterface, Iterator
+class Response implements ResponseInterface, FactoryInterface, Iterator, \Countable
 {
     private const JSON_DECODE_OPTIONS = 512;
 
@@ -133,6 +133,11 @@ class Response implements ResponseInterface, FactoryInterface, Iterator
         return $value;
     }
 
+    public function getResponseValueAsBool(string $key, mixed $default = false): bool
+    {
+        return ($value = $this->getResponseValue($key, $default)) === null ? $default : (bool)$value;
+    }
+
     public function getResponseValue(string $key, mixed $default = null): mixed
     {
         return $this->valid() ? ($this->current()[$key] ?? $default) : $default;
@@ -162,5 +167,18 @@ class Response implements ResponseInterface, FactoryInterface, Iterator
     {
         /** @noinspection ForgottenDebugOutputInspection */
         \var_dump($this->response);
+    }
+
+    public function count(): int
+    {
+        return \count($this->response);
+    }
+
+    /**
+     * @return bool response data available
+     */
+    public function hasResponse(): bool
+    {
+        return (bool)$this->response;
     }
 }

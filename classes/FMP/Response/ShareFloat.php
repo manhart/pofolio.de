@@ -21,7 +21,7 @@ class ShareFloat extends Response
 
     public function getDate(): ?\DateTimeInterface
     {
-        return $this->getResponseValueAsDate('date');
+        return $this->getResponseValueAsDate('date') ?? (new \DateTime())->setTime(0, 0);
     }
 
     public function getFreeFloat(): ?float
