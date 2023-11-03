@@ -35,6 +35,7 @@ switch($serverName = $_SERVER['SERVER_NAME'] ??= gethostname()) {
     case 'g7system': // CLI host
     case 'dev.local':
     case 'pofolio':
+    case 'pofolio.local':
         #Develop box
         $stage = stage::develop;
         $relativeRoot = '..';

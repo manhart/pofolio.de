@@ -24,12 +24,6 @@ use pofolio\guis\GUI_Frame\GUI_Frame;
 use pool\classes\Core\Weblication;
 use pool\classes\Database\DataInterface;
 
-//$connectOptions = [
-//    'host' => MYSQL_HOST,
-//    'database' => constant('DB_G7PORTAL'),
-//];
-//$MariaDB = DataInterface::createDataInterface($connectOptions);
-
 $App = PofolioApp::getInstance();
 //$App->addDataInterface($MariaDB);
 

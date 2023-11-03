@@ -127,7 +127,6 @@ foreach($symbols as $symbol) {
     historicalPriceImporter($client, $symbol);
     incomeStatementImporter($client, $symbol);
     balanceSheetStatementImporter($client, $symbol);
-    break;
 }
 
 
@@ -646,7 +645,10 @@ function incomeStatementImporter(FmpApiClient $client, string $symbol): void
                 $difference = \abs($EPS - $EPSDiluted);
                 $average = ($EPS + $EPSDiluted) / 2;
                 $percent = $difference / $average * 100;
-                if($percent > 10) {
+
+                $absoluteDifferenceThreshold = 3;
+
+                if($percent > 15 && $difference > $absoluteDifferenceThreshold) {
                     throw new RuntimeException("EPS and EPSDiluted are very different $EPS vs $EPSDiluted for symbol $symbol in $calendarYear-$period!");
                 }
             }

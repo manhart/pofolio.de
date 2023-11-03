@@ -1,8 +1,8 @@
 <?php
 /*
- * This file is part of the pofolio project.
+ * This file is part of the pofolio.de project.
  *
- * @copyright Copyright (c) 2023 Alexander Manhart IT
+ * @copyright Copyright (c) 2023. Alexander Manhart IT
  * @authors Alexander Manhart
  *
  * GUI_Frame.php created on 12.09.23, 22:29.
@@ -63,6 +63,13 @@ class GUI_Frame extends GUI_CustomFrame
         // Bootstrap CSS
         $cssFile = addEndingSlash($bootstrapPath).'css/bootstrap'.$min.'.css';
         $this->getHeadData()->addStyleSheet($cssFile);
+
+        // Tabulator ----------------------------------------------------------------------------
+        Resources\CSS_tabulator::addResourceTo($this->getHeadData(), IS_PRODUCTION, resource: Resources\dir\Dir_tabulator::BS5);
+        Resources\JS__tabulator::addResourceTo($this->getHeadData(), IS_PRODUCTION);
+
+        // Url --------------------------------------------------------------------------------------------
+        $this->getHeadData()->addJavaScript($this->Weblication->findJavaScript('url.js', '', true));
 
         $appCSS = $this->Weblication->findStyleSheet('app.css');
         $this->getHeadData()->addStyleSheet($appCSS);

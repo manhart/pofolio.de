@@ -11,7 +11,18 @@
 namespace pofolio\classes;
 
 use pool\classes\Core\Weblication;
+use pool\classes\Database\DataInterface;
 
 class PofolioApp extends Weblication
 {
+    public function setup(array $settings = []): static
+    {
+        parent::setup($settings);
+        $connectOptions = [
+            'host' => MYSQL_HOST,
+            'database' => constant('DB_POFOLIO'),
+        ];
+        $this->addDataInterface(DataInterface::createDataInterface($connectOptions));
+        return $this;
+    }
 }
