@@ -10,7 +10,10 @@
 
 namespace pofolio\classes\FMP\Client;
 
+use pofolio\classes\FMP\Response\Quote;
+use pofolio\classes\FMP\Response\QuoteShort;
 use pofolio\classes\FMP\Response\BalanceSheetStatement;
+use pofolio\classes\FMP\Response\CashflowStatement;
 use pofolio\classes\FMP\Response\CompanyCoreInformation;
 use pofolio\classes\FMP\Response\DelistedCompanies;
 use pofolio\classes\FMP\Response\HistoricalPrice;
@@ -40,11 +43,19 @@ class FmpApiClient
      */
     protected string $baseUrl = 'https://financialmodelingprep.com/api';
 
+    /**
+     * @var string API Key for accessing the API
+     */
     private readonly string $apiKey;
 
-    /** Amount of Requests */
+    /**
+     * @var int Amount of Requests
+     */
     private int $requests = 0;
 
+    /**
+     * @var string Last endpoint URL called by API
+     */
     private string $lastEndpointURL = '';
 
     /**
@@ -104,9 +115,12 @@ class FmpApiClient
     }
 
     /**
-     * @param string $endpoint
-     * @param mixed $params
-     * @return string
+     * Builds the endpoint URL for API requests.
+     *
+     * @param string $endpoint The API endpoint.
+     * @param mixed $params The parameters to include in the URL.
+     *
+     * @return string The built endpoint URL.
      */
     private function buildEndpointURL(string $endpoint, mixed $params): string
     {
@@ -193,6 +207,25 @@ class FmpApiClient
             $symbolOrCIK = \str_pad((string)$symbolOrCIK, 10, '0', \STR_PAD_LEFT);
         }
         return BalanceSheetStatement::create($this, $symbolOrCIK, limit: $limit, period: $period);
+    }
+
+    public function getCashflowStatement(string|int $symbolOrCIK, ?string $period = IncomeStatement::PERIOD_ANNUAL, ?string $dataType = 'json', ?int $limit = null): CashflowStatement
+    {
+        if(is_int($symbolOrCIK)) {
+            // format CIK as string
+            $symbolOrCIK = \str_pad((string)$symbolOrCIK, 10, '0', \STR_PAD_LEFT);
+        }
+        return CashflowStatement::create($this, $symbolOrCIK, limit: $limit, period: $period);
+    }
+
+    public function getQuote(string|array $symbol): Quote
+    {
+        return Quote::create($this, $symbol);
+    }
+
+    public function getQuoteShort(string $symbol): QuoteShort
+    {
+        return QuoteShort::create($this, $symbol);
     }
 
     public function getLastEndpointURL(): string
