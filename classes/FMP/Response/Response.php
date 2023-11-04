@@ -125,6 +125,8 @@ class Response implements ResponseInterface, FactoryInterface, Iterator, \Counta
             $value = $this->getResponseValue($key, $default);
             // remove line breaks, because they are not allowed in a DateTime string (ISO 8601)
             $value = mb_ereg_replace("(\r\n|\r|\n)", '', $value);
+            if(\is_numeric($value) && !str_contains($value, '-'))
+                $value = "@$value";
             $value = empty($value) ? $default : new \DateTime($value);
         }
         catch(\Exception) {
