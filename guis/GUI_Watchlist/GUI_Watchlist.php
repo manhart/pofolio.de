@@ -11,6 +11,7 @@
 
 namespace pofolio\guis\GUI_WatchList;
 
+use pofolio\classes\FMP\Client\FmpApiClient;
 use pofolio\dao\mysql\pofolio\Stock;
 use pool\classes\Core\Input\Input;
 
@@ -35,12 +36,13 @@ class GUI_Watchlist extends \GUI_Module
     protected function registerAjaxCalls(): void
     {
         $this->registerAjaxMethod('getWatchlist', $this->getWatchlist(...), true);
+        $this->registerAjaxMethod('getQuotes', $this->getQuotes(...));
     }
 
     protected function getWatchlist(int $page = 1, int $size = 5, array $sort = [], array $filter = []): array
     {
         $stockDAO = Stock::create();
-        $stockDAO->setColumns('idStock', 'symbol', 'name', 'ISIN');
+        $stockDAO->setColumns('idStock', 'symbol', 'name', 'ISIN', 'price');
         $limit = [
             ($page - 1) * $size,
             $size,
@@ -68,5 +70,36 @@ class GUI_Watchlist extends \GUI_Module
             'data' => $stockSet->getRaw(),
             'last_page' => $lastPage
         ];
+    }
+
+    protected function getQuotes(array $stockIds): array
+    {
+        if(!$stockIds) {
+            return [];
+        }
+        $stockDAO = Stock::create();
+        $stockDAO->setColumns('idStock', 'symbol');
+        $stockSet = $stockDAO->getMultiple(filter_rules: [['idStock', 'in', $stockIds]]);
+
+        $quoteResponse = FmpApiClient::getInstance()->getQuote($stockSet->getFieldData('symbol'));
+
+        $quotes = [];
+        foreach($quoteResponse as $ignore) {
+            $symbol = $quoteResponse->getSymbol();
+            $price = $quoteResponse->getPrice();
+            $volume = $quoteResponse->getVolume();
+
+            $idStock = $stockDAO->get($symbol, 'symbol')->getValueAsInt('idStock');
+
+            $quote = [
+                'idStock' => $idStock,
+                'price' => $price,
+                'volume' => $volume
+            ];
+            $stockDAO->update($quote);
+            $quotes[] = $quote;
+        }
+
+        return $quotes;
     }
 }
