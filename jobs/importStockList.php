@@ -13,6 +13,7 @@ namespace pofolio\jobs;
 // PHP gets an incredible amount of time
 use pofolio\classes\FMP\Client\FmpApiClient;
 use pofolio\dao\mysql\pofolio\BalanceSheetStatement;
+use pofolio\dao\mysql\pofolio\CashflowStatement;
 use pofolio\dao\mysql\pofolio\Company;
 use pofolio\dao\mysql\pofolio\Country;
 use pofolio\dao\mysql\pofolio\Currency;
@@ -100,16 +101,22 @@ $client = FmpApiClient::getInstance();
 
 
 
-$symbols = ['TNC', 'CRM', 'TEVA.TA', 'MBB.DE', 'KWS.DE', 'UHS', 'POS.VI', 'HIMS', 'VRNS', 'APH', 'COP.DE', 'UTDI.DE', 'AEM', 'MYTAY', 'UNA.AS', 'HEIA.AS', 'CMC.DE', '0066.HK', 'DG.PA', 'TSM', 'EXTR', 'NOEJ.DE', 'IBC3.F', 'IS3N.DE',
+$symbols = array_unique([/*'ALRM', 'UMI.BR', 'TNC', 'CRM', 'TEVA.TA', 'MBB.DE', 'KWS.DE', 'UHS', 'POS.VI', 'HIMS', 'VRNS', 'APH', 'COP.DE', 'UTDI.DE', 'AEM', 'MYTAY',
+    'UNA.AS', 'HEIA.AS', 'CMC.DE', '0066.HK', 'DG.PA', 'TSM', 'EXTR', 'NOEJ.DE', 'IBC3.F', 'IS3N.DE', 'SAVE', 'UPST', 'RH', 'ENR.DE', 'WBD', '2HRA.DE',
     'IBC3.DE', 'ABR', 'BNR.DE', 'PRX.AS', 'KRN.DE', 'WDC', 'LSG.OL', 'HFG.DE', 'CTSH', 'SWKS', 'DBX', 'SSD', 'EUZ.DE', '690D.DE', 'BDT.DE', 'GIS',
     'PND.F', 'MOWI.OL', 'RI.PA', 'MAR', 'INTC', 'HOT.DE', '639.DE', 'EA', 'NEM.DE', 'DE', 'AZN.L', 'TMV.DE', 'LMT', 'BHP', 'UBER', '3RB.DE', '2587.T',
     'CVS', 'TPE.DE', 'SHF.DE', 'ABEA.DE', 'AMD', 'PEP', 'SAP.DE', 'MKL', 'KHC', 'STO3.DE', 'JNJ', 'SHELL.AS', 'AMS.MC', 'FRA.DE', 'IBM', '8TRA.DE',
-    'DHI', 'DEMANT.CO', 'QSR', 'PANW', 'MCD', '5108.T', 'ORCL', 'QLYS', '11B.WA', 'MAR', 'PDX.ST', 'NTNX', 'NKE', 'TOM.OL', 'TTE.PA', 'AVGO', 'NEM',
+    'DHI', 'DEMANT.CO', 'QSR', 'PANW', 'MCD', '5108.T', 'ORCL', 'QLYS', '11B.WA', 'PDX.ST', 'NTNX', 'NKE', 'TOM.OL', 'TTE.PA', 'AVGO', 'NEM',
     'ALV.DE', 'NOC', '0941.HK', 'IAC', '3662.HK', 'CHGG', 'APPS', 'COMP', 'LPSN', 'FNKO', 'FSLY', 'COIN', 'CRNC', 'SMWB', 'ZBRA', 'ILMN', 'MPW', 'EOAN.DE',
     'BPOST.BR', '5CP.SI', 'CDR.WA', 'AMS.SW', '013A.F', '1044.HK', 'M0YN.DE', 'MRK.DE', 'DHL.DE', 'CCC3.DE', 'AIR.DE', 'BAKKA.OL', 'AMGN', 'GFT.DE',
     'SAM', 'PAYX', 'ECV.DE', 'WPM', 'META', 'SIE.DE', 'INVE-A.ST', 'INVE-B.ST', 'JKHY', 'PSTG', 'MUV2.DE', 'SALM.OL', 'INFY.NS', 'GOOGL', 'MTX.DE',
     'ATS.VI', 'FDS', 'NXU.DE', 'ADSK', 'AAD.DE', 'BC8.DE', 'MDO.DE', 'ANET', 'EVD.DE', 'ZS', 'CMG', 'MSFT', 'ADBE', 'NVO', 'NOVO-B.CO', 'NOVC.DE',
-    'DMRE.DE', 'KTN.DE', 'TTD', 'NVDA', 'AMZN', '9618.HK'];
+    'DMRE.DE', 'KTN.DE', 'TTD', 'NVDA', 'AMZN', '9618.HK', 'IFF', 'ACC.OL', 'ROKU', 'KLG', 'ESTC', 'FRE.DE', 'QCOM', 'KGX.DE', '1177.HK', 'OSP2.DE',
+    'VOW.DE', 'VOW3.DE', '9988.HK', 'BABA', 'MTCH', 'BBZA.DE', 'BION.SW', 'NNND.F', '0700.HK', 'GSHD', 'CTM.F', 'KEYS', 'EFX', 'LXH', 'AUTO.OL', 'PFE',
+    'BAYN.DE', 'PYPL', 'SSTK', 'DIS', 'NDX1.DE', 'YAR.OL', 'U', 'KNEBV.HE', 'T', 'ADN1.DE', 'SYF', 'BMY', 'PUM.DE', 'AGCO', 'P911.HM', 'PAH3.DE', 'P911.DE',
+    'BAS.DE', 'GS7.DE', 'K', 'BMT.DE', 'MARR.MI', 'TSN', '2GB.DE', 'MDT', 'SWK', 'MMM', 'CMC', 'ABI.BR', '1NBA.DE', 'FPE.DE', 'MOL.BD', 'MYTAY', 'AEM.TO',
+    'LVS', '7309.T', 'VVSM.DE', 'IBKR', 'ST5.DE', 'HEN.DE', 'HEN3.DE', '1TY.DE',*/ 'NVJP.DE', 'DOCN', 'NGLB.DE', 'AAL.L', 'GSF.OL', 'B1C.F', '9888.HK',
+    'B5A.DE', 'AR4.DE', 'COK.DE', 'KCO.DE', '3690.HK', 'AYX', 'SSYS', 'COMP', 'SEDG']);
 
 foreach($symbols as $symbol) {
     try {
@@ -127,6 +134,7 @@ foreach($symbols as $symbol) {
     historicalPriceImporter($client, $symbol);
     incomeStatementImporter($client, $symbol);
     balanceSheetStatementImporter($client, $symbol);
+    cashflowStatementImporter($client, $symbol);
 }
 
 
@@ -577,14 +585,24 @@ function historicalPriceImporter(FmpApiClient $client, string $symbol): void
         if($historicalPriceDAO->exists($idStock, $historicalPrice->getDate())) {
             continue;
         }
+        $open = $historicalPrice->getOpen();
+        $high = $historicalPrice->getHigh();
+        $low = $historicalPrice->getLow();
+        $close = $historicalPrice->getClose();
+
+        $adjClose = $historicalPrice->getAdjClose();
+        if($adjClose < 0) { // if adjClose is negative, then it is wrong
+            $adjClose = $close;
+        }
+
         $historicalPriceData = [
             'idStock' => $idStock,
             'date' => $historicalPrice->getDate(),
-            'open' => $historicalPrice->getOpen(),
-            'high' => $historicalPrice->getHigh(),
-            'low' => $historicalPrice->getLow(),
-            'close' => $historicalPrice->getClose(),
-            'adjClose' => $historicalPrice->getAdjClose(),
+            'open' => $open,
+            'high' => $high,
+            'low' => $low,
+            'close' => $close,
+            'adjClose' => $adjClose,
             'volume' => $historicalPrice->getVolume(),
             'unadjustedVolume' => $historicalPrice->getUnadjustedVolume(),
             'change' => $historicalPrice->getChange(),
@@ -648,7 +666,7 @@ function incomeStatementImporter(FmpApiClient $client, string $symbol): void
 
                 $absoluteDifferenceThreshold = 3;
 
-                if($percent > 15 && $difference > $absoluteDifferenceThreshold) {
+                if($percent > 100 && $difference > $absoluteDifferenceThreshold) {
                     throw new RuntimeException("EPS and EPSDiluted are very different $EPS vs $EPSDiluted for symbol $symbol in $calendarYear-$period!");
                 }
             }
@@ -818,8 +836,8 @@ function balanceSheetStatementImporter(FmpApiClient $client, string $symbol): vo
                     ['timePeriod', 'equal', $balanceSheetStatement->getPeriod()]
                 ];
                 $idBalanceSheetStatement = $balanceSheetStatementDAO->setColumns('idBalanceSheetStatement')->getMultiple(filter_rules: $filter_rules)->getValueAsInt('idBalanceSheetStatement');
-                $incomeStatementData['idBalanceSheetStatement'] = $idBalanceSheetStatement;
-                $recordSet = $balanceSheetStatementDAO->update($incomeStatementData);
+                $balanceSheetStatementData['idBalanceSheetStatement'] = $idBalanceSheetStatement;
+                $recordSet = $balanceSheetStatementDAO->update($balanceSheetStatementData);
             }
             else {
                 $recordSet = $balanceSheetStatementDAO->insert($balanceSheetStatementData);
@@ -832,6 +850,108 @@ function balanceSheetStatementImporter(FmpApiClient $client, string $symbol): vo
 
     $importBalanceSheetStatement($balanceSheetStatementAnnual, $idStock, $symbol);
     $importBalanceSheetStatement($balanceSheetStatementQuarterly, $idStock, $symbol);
+}
+
+function cashflowStatementImporter(FmpApiClient $client, string $symbol): void
+{
+    [$idStock, $symbol] = extractSymbol($symbol);
+    $cashflowStatementAnnual = $client->getCashflowStatement($symbol);
+    echo 'CashflowStatement for: '.$symbol.LINE_BREAK;
+    $cashflowStatementAnnual->dump();
+
+    $cashflowStatementQuarterly = $client->getCashflowStatement($symbol, \pofolio\classes\FMP\Response\CashflowStatement::PERIOD_QUARTER);
+    // dump not necessary
+
+    $importCashflowStatement = static function(
+        \pofolio\classes\FMP\Response\CashflowStatement $cashflowStatement,
+        mixed $idStock,
+        string $symbol
+    ): void {
+        $cashflowStatementDAO = CashflowStatement::create();
+        $currencyDAO = Currency::create();
+        foreach($cashflowStatement as $ignored) {
+
+            $idReportedCurrency = $currencyDAO->setColumns('idCurrency')->get($cashflowStatement->getReportedCurrency(),
+                'currency')->getValueAsInt('idCurrency') ?:
+                Stock::create()->setColumns('idCurrency')->get($idStock, 'idStock')->getValueAsInt('idCurrency');
+
+            $periodOrder = match ($cashflowStatement->getPeriod()) {
+                CashflowStatement::PERIOD_QUARTER1 => 1,
+                CashflowStatement::PERIOD_QUARTER2 => 2,
+                CashflowStatement::PERIOD_QUARTER3 => 3,
+                CashflowStatement::PERIOD_QUARTER4 => 4,
+                CashflowStatement::PERIOD_FISCAL_YEAR => 0,
+                default => throw new RuntimeException('Unknown period: ' . $cashflowStatement->getPeriod()),
+            };
+
+            $calendarYear = $cashflowStatement->getCalendarYear();
+            $period = $cashflowStatement->getPeriod();
+
+            $cashflowStatementData = [
+                'idStock' => $idStock,
+                'date' => $cashflowStatement->getDate(),
+                'idReportedCurrency' => $idReportedCurrency,
+                'CIK' => $cashflowStatement->getCIK(),
+                'fillingDate' => $cashflowStatement->getFillingDate(),
+                'acceptedDate' => $cashflowStatement->getAcceptedDate(),
+                'calendarYear' => $calendarYear,
+                'timePeriod' => $period,
+                'periodOrder' => $periodOrder,
+                'netIncome' => $cashflowStatement->getNetIncome(),
+                'depreciationAndAmortization' => $cashflowStatement->getDepreciationAndAmortization(),
+                'deferredIncomeTax' => $cashflowStatement->getDeferredIncomeTax(),
+                'stockBasedCompensation' => $cashflowStatement->getStockBasedCompensation(),
+                'changeInWorkingCapital' => $cashflowStatement->getChangeInWorkingCapital(),
+                'accountsReceivables' => $cashflowStatement->getAccountsReceivables(),
+                'inventory' => $cashflowStatement->getInventory(),
+                'accountsPayables' => $cashflowStatement->getAccountsPayables(),
+                'otherWorkingCapital' => $cashflowStatement->getOtherWorkingCapital(),
+                'otherNonCashItems' => $cashflowStatement->getOtherNonCashItems(),
+                'netCashProvidedByOperatingActivities' => $cashflowStatement->getNetCashProvidedByOperatingActivities(),
+                'investmentsInPropertyPlantAndEquipment' => $cashflowStatement->getInvestmentsInPropertyPlantAndEquipment(),
+                'acquisitionsNet' => $cashflowStatement->getAcquisitionsNet(),
+                'purchasesOfInvestments' => $cashflowStatement->getPurchasesOfInvestments(),
+                'salesMaturitiesOfInvestments' => $cashflowStatement->getSalesMaturitiesOfInvestments(),
+                'otherInvestingActivites' => $cashflowStatement->getOtherInvestingActivites(),
+                'netCashUsedForInvestingActivites' => $cashflowStatement->getNetCashUsedForInvestingActivites(),
+                'debtRepayment' => $cashflowStatement->getDebtRepayment(),
+                'commonStockIssued' => $cashflowStatement->getCommonStockIssued(),
+                'commonStockRepurchased' => $cashflowStatement->getCommonStockRepurchased(),
+                'dividendsPaid' => $cashflowStatement->getDividendsPaid(),
+                'otherFinancingActivites' => $cashflowStatement->getOtherFinancingActivites(),
+                'netCashUsedProvidedByFinancingActivities' => $cashflowStatement->getNetCashUsedProvidedByFinancingActivities(),
+                'effectOfForexChangesOnCash' => $cashflowStatement->getEffectOfForexChangesOnCash(),
+                'netChangeInCash' => $cashflowStatement->getNetChangeInCash(),
+                'cashAtEndOfPeriod' => $cashflowStatement->getCashAtEndOfPeriod(),
+                'cashAtBeginningOfPeriod' => $cashflowStatement->getCashAtBeginningOfPeriod(),
+                'operatingCashFlow' => $cashflowStatement->getOperatingCashFlow(),
+                'capitalExpenditure' => $cashflowStatement->getCapitalExpenditure(),
+                'freeCashFlow' => $cashflowStatement->getFreeCashFlow(),
+                'link' => $cashflowStatement->getLink(),
+                'finalLink' => $cashflowStatement->getFinalLink(),
+            ];
+
+            if($cashflowStatementDAO->exists($idStock, $cashflowStatement->getCalendarYear(), $cashflowStatement->getPeriod())) {
+                $filter_rules = [
+                    [$idStock, 'equal', 'idStock'],
+                    ['calendarYear', 'equal', $cashflowStatement->getCalendarYear()],
+                    ['timePeriod', 'equal', $cashflowStatement->getPeriod()]
+                ];
+                $idCashflowStatement = $cashflowStatementDAO->setColumns('idCashflowStatement')->getMultiple(filter_rules: $filter_rules)->getValueAsInt('idCashflowStatement');
+                $cashflowStatementData['idCashflowStatement'] = $idCashflowStatement;
+                $recordSet = $cashflowStatementDAO->update($cashflowStatementData);
+            }
+            else {
+                $recordSet = $cashflowStatementDAO->insert($cashflowStatementData);
+            }
+            if($lastError = $recordSet->getLastError()) {
+                throw new RuntimeException($lastError['message'], $lastError['code']);
+            }
+        }
+    };
+
+    $importCashflowStatement($cashflowStatementAnnual, $idStock, $symbol);
+    $importCashflowStatement($cashflowStatementQuarterly, $idStock, $symbol);
 }
 
 function refreshShareFloat(int|string $symbol): void
