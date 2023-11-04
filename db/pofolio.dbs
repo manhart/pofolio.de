@@ -78,6 +78,71 @@
 			</fk>
 			<options><![CDATA[engine=InnoDB]]></options>
 		</table>
+		<table name="CashflowStatement" prior="BalanceSheetStatement_0" >
+			<column name="idCashflowStatement" prior="idBalanceSheetStatement" type="BIGINT" jt="-5" mandatory="y" unsigned="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="idStock" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
+			<column name="date" type="DATE" jt="91" mandatory="y" />
+			<column name="idReportedCurrency" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" />
+			<column name="CIK" type="INT" jt="4" >
+				<comment><![CDATA[Central Index Key]]></comment>
+			</column>
+			<column name="fillingDate" type="DATE" jt="91" />
+			<column name="acceptedDate" type="DATETIME" jt="93" />
+			<column name="calendarYear" type="YEAR" length="4" jt="4" mandatory="y" unsigned="y" />
+			<column name="timePeriod" type="CHAR" length="2" jt="1" mandatory="y" />
+			<column name="periodOrder" type="TINYINT" jt="-6" mandatory="y" unsigned="y" />
+			<column name="netIncome" prior="cashAndCashEquivalents" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="depreciationAndAmortization" prior="shortTermInvestments" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="deferredIncomeTax" prior="cashAndShortTermInvestments" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="stockBasedCompensation" prior="netReceivables" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="changeInWorkingCapital" prior="inventory" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="accountsReceivables" prior="otherCurrentAssets" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="inventory" prior="totalCurrentAssets" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="accountsPayables" prior="propertyPlantEquipmentNet" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="otherWorkingCapital" prior="goodwill" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="otherNonCashItems" prior="intangibleAssets" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="netCashProvidedByOperatingActivities" prior="goodwillAndIntangibleAssets" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="investmentsInPropertyPlantAndEquipment" prior="longTermInvestments" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="acquisitionsNet" prior="taxAssets" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="purchasesOfInvestments" prior="otherNonCurrentAssets" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="salesMaturitiesOfInvestments" prior="totalNonCurrentAssets" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="otherInvestingActivites" prior="otherAssets" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="netCashUsedForInvestingActivites" prior="totalAssets" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="debtRepayment" prior="accountPayables" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="commonStockIssued" prior="shortTermDebt" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="commonStockRepurchased" prior="taxPayables" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="dividendsPaid" prior="deferredRevenue" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="otherFinancingActivites" prior="otherCurrentLiabilities" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="netCashUsedProvidedByFinancingActivities" prior="totalCurrentLiabilities" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="effectOfForexChangesOnCash" prior="longTermDebt" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="netChangeInCash" prior="deferredRevenueNonCurrent" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="cashAtEndOfPeriod" prior="deferredTaxLiabilitiesNonCurrent" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="cashAtBeginningOfPeriod" prior="otherNonCurrentLiabilities" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="operatingCashFlow" prior="totalNonCurrentLiabilities" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="capitalExpenditure" prior="otherLiabilities" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="freeCashFlow" prior="capitalLeaseObligations" type="DECIMAL" length="17" decimal="0" jt="3" />
+			<column name="link" type="VARCHAR" length="512" jt="12" />
+			<column name="finalLink" type="VARCHAR" length="512" jt="12" />
+			<column name="updated" type="DATETIME" jt="93" >
+				<column_options><![CDATA[ON UPDATE CURRENT_TIMESTAMP]]></column_options>
+			</column>
+			<column name="created" type="DATETIME" jt="93" mandatory="y" >
+				<defo><![CDATA[current_timestamp()]]></defo>
+			</column>
+			<index name="ui_CashflowStatement" unique="UNIQUE_KEY" >
+				<column name="idStock" />
+				<column name="calendarYear" />
+				<column name="timePeriod" />
+			</index>
+			<index name="pk_CashflowStatement" unique="PRIMARY_KEY" >
+				<column name="idCashflowStatement" />
+			</index>
+			<fk name="fk_balancesheetstatement_0" to_schema="pofolio" to_table="Stock" >
+				<fk_column name="idStock" pk="idStock" />
+			</fk>
+		</table>
 		<table name="Company" >
 			<column name="idStock" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
 			<column name="companyName" type="VARCHAR" length="100" jt="12" />
@@ -243,14 +308,14 @@
 			</column>
 			<column name="idStock" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
 			<column name="date" type="DATE" jt="91" mandatory="y" />
-			<column name="open" type="DECIMAL" length="10" decimal="2" jt="3" mandatory="y" unsigned="y" />
-			<column name="high" type="DECIMAL" length="10" decimal="2" jt="3" mandatory="y" unsigned="y" />
-			<column name="low" type="DECIMAL" length="10" decimal="2" jt="3" mandatory="y" unsigned="y" />
-			<column name="close" type="DECIMAL" length="10" decimal="2" jt="3" mandatory="y" unsigned="y" />
-			<column name="adjClose" type="DECIMAL" length="10" decimal="2" jt="3" mandatory="y" unsigned="y" />
+			<column name="open" type="DECIMAL" length="14" decimal="6" jt="3" mandatory="y" unsigned="y" />
+			<column name="high" type="DECIMAL" length="14" decimal="6" jt="3" mandatory="y" unsigned="y" />
+			<column name="low" type="DECIMAL" length="14" decimal="6" jt="3" mandatory="y" unsigned="y" />
+			<column name="close" type="DECIMAL" length="14" decimal="6" jt="3" mandatory="y" unsigned="y" />
+			<column name="adjClose" type="DECIMAL" length="14" decimal="6" jt="3" mandatory="y" unsigned="y" />
 			<column name="volume" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
 			<column name="unadjustedVolume" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
-			<column name="change" type="DECIMAL" length="10" decimal="2" jt="3" mandatory="y" />
+			<column name="change" type="DECIMAL" length="14" decimal="6" jt="3" mandatory="y" />
 			<column name="changePercent" type="DECIMAL" length="10" decimal="7" jt="3" mandatory="y" />
 			<column name="vwap" type="DECIMAL" length="10" decimal="2" jt="3" mandatory="y" unsigned="y" />
 			<column name="changeOverTime" type="DECIMAL" length="17" decimal="10" jt="3" mandatory="y" />
@@ -311,8 +376,8 @@
 			<column name="incomeTaxExpense" type="DECIMAL" length="17" decimal="0" jt="3" />
 			<column name="netIncome" type="DECIMAL" length="17" decimal="0" jt="3" />
 			<column name="netIncomeRatio" type="DECIMAL" length="17" decimal="0" jt="3" />
-			<column name="EPS" prior="eps" type="DECIMAL" length="7" decimal="2" jt="3" />
-			<column name="EPSDiluted" prior="epsdiluted" type="DECIMAL" length="7" decimal="2" jt="3" />
+			<column name="EPS" prior="eps" type="DECIMAL" length="9" decimal="2" jt="3" />
+			<column name="EPSDiluted" prior="epsdiluted" type="DECIMAL" length="9" decimal="2" jt="3" />
 			<column name="weightedAverageShsOut" type="DECIMAL" length="17" decimal="0" jt="3" />
 			<column name="weightedAverageShsOutDil" type="DECIMAL" length="17" decimal="0" jt="3" />
 			<column name="link" type="VARCHAR" length="512" jt="12" />
@@ -591,16 +656,17 @@
 			<options><![CDATA[engine=InnoDB]]></options>
 		</table>
 	</schema>
-	<connector name="MariaDb" database="MariaDb" driver_class="org.mariadb.jdbc.Driver" driver_jar="mariadb-java-client-3.2.0.jar" driver_desc="Standard" host="dev.local" port="3306" instance="pofolio" user="vagrant" useSystemProxy="false" />
+	<layout name="MariaDb" id="Layout-2660" show_relation="columns" />
 	<layout name="financialmodelingprep" id="Layout-289" joined_routing="y" show_relation="columns" >
-		<entity schema="pofolio" name="BalanceSheetStatement" color="C1D8EE" x="432" y="1184" />
+		<entity schema="pofolio" name="BalanceSheetStatement" color="C1D8EE" x="432" y="1200" />
+		<entity schema="pofolio" name="CashflowStatement" color="3986C1" x="832" y="1200" />
 		<entity schema="pofolio" name="Company" color="C1D8EE" x="640" y="464" />
 		<entity schema="pofolio" name="Currency" color="C1D8EE" x="48" y="1024" />
 		<entity schema="pofolio" name="Dividend" color="C1D8EE" x="352" y="304" />
 		<entity schema="pofolio" name="DividendCalendar" color="3986C1" x="352" y="48" />
 		<entity schema="pofolio" name="Exchange" color="C1D8EE" x="48" y="624" />
 		<entity schema="pofolio" name="HistoricalPrice" color="C1D8EE" x="48" y="288" />
-		<entity schema="pofolio" name="IncomeStatement" color="C1D8EE" x="80" y="1184" />
+		<entity schema="pofolio" name="IncomeStatement" color="C1D8EE" x="64" y="1216" />
 		<entity schema="pofolio" name="Industry" color="C1D8EE" x="48" y="768" />
 		<entity schema="pofolio" name="PriceTarget" color="C1D8EE" x="656" y="880" />
 		<entity schema="pofolio" name="SIC" color="C1D8EE" x="848" y="464" />
