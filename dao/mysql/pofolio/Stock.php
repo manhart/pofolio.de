@@ -29,6 +29,81 @@ class Stock extends PofolioDAO
         'tradeable',
     ];
 
+    protected array $metaData = [
+        'columns' => [
+            'idStock' => [
+                'type' => 'int',
+                'phpType' => 'int',
+                'length' => 11,
+                'auto_increment' => true,
+                'nullable' => false,
+                'unsigned' => true,
+            ],
+            'symbol' => [
+                'type' => 'varchar',
+                'phpType' => 'string',
+                'length' => 13,
+                'nullable' => false,
+            ],
+            'type' => [
+                'type' => 'enum',
+                'phpType' => 'string',
+                'nullable' => false,
+            ],
+            'name' => [
+                'type' => 'varchar',
+                'phpType' => 'string',
+                'length' => 255,
+                'nullable' => false,
+            ],
+            'price' => [
+                'type' => 'decimal',
+                'phpType' => 'float',
+                'length' => 10,
+                'precision' => 2,
+                'nullable' => false,
+                'unsigned' => true,
+            ],
+            'volume' => [
+                'type' => 'int',
+                'phpType' => 'int',
+                'length' => 11,
+                'nullable' => false,
+                'unsigned' => true,
+            ],
+            'idExchange' => [
+                'type' => 'mediumint',
+                'phpType' => 'int',
+                'length' => 9,
+                'nullable' => false,
+            ],
+            'tradeable' => [
+                'type' => 'tinyint',
+                'phpType' => 'bool',
+                'length' => 1,
+                'nullable' => false,
+            ],
+            'idCurrency' => [
+                'type' => 'mediumint',
+                'phpType' => 'int',
+                'length' => 9,
+                'nullable' => false,
+            ],
+            'idIndustry' => [
+                'type' => 'mediumint',
+                'phpType' => 'int',
+                'length' => 9,
+                'nullable' => false,
+            ],
+            'idSector' => [
+                'type' => 'mediumint',
+                'phpType' => 'int',
+                'length' => 9,
+                'nullable' => false,
+            ],
+        ]
+    ];
+
     public function exists(string $symbol): bool
     {
         $filter = [
