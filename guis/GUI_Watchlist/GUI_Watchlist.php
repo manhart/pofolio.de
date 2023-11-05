@@ -42,7 +42,12 @@ class GUI_Watchlist extends \GUI_Module
     protected function getWatchlist(int $page = 1, int $size = 5, array $sort = [], array $filter = []): array
     {
         $stockDAO = Stock::create();
-        $stockDAO->setColumns('idStock', 'symbol', 'name', 'ISIN', 'price');
+
+        $stockDAO->setColumns('idStock', 'symbol', 'name', 'ISIN', 'marketCap', 'price', 'changePercent');
+        $stockDAO->setFormatter('marketCap', $this->formatMarketCap(...));
+        $stockDAO->setFormatter('price', $this->formatPrice(...));
+        $stockDAO->setFormatter('changePercent', $this->formatChangePercent(...));
+
         $limit = [
             ($page - 1) * $size,
             $size,
@@ -72,13 +77,29 @@ class GUI_Watchlist extends \GUI_Module
         ];
     }
 
+    protected function formatMarketCap(float $marketCap, array $row = []): string
+    {
+        return abbreviateNumber($marketCap);
+    }
+
+    protected function formatPrice(float $price, array $row = []): string
+    {
+        return number_format($price, 2, '.', '');
+    }
+
+    protected function formatChangePercent(float $changePercent, array $row = []): string
+    {
+        $sign = ($changePercent > 0) ? '+' : '';
+        return $sign.number_format($changePercent, 2, '.', '.') . '%';
+    }
+
     protected function getQuotes(array $stockIds): array
     {
         if(!$stockIds) {
             return [];
         }
         $stockDAO = Stock::create();
-        $stockDAO->setColumns('idStock', 'symbol');
+        $stockDAO->setColumns('idStock', 'symbol', 'previousClose');
         $stockSet = $stockDAO->getMultiple(filter_rules: [['idStock', 'in', $stockIds]]);
 
         $quoteResponse = FmpApiClient::getInstance()->getQuote($stockSet->getFieldData('symbol'));
@@ -88,15 +109,28 @@ class GUI_Watchlist extends \GUI_Module
             $symbol = $quoteResponse->getSymbol();
             $price = $quoteResponse->getPrice();
             $volume = $quoteResponse->getVolume();
+            $lastOutstandingShares = $quoteResponse->getSharesOutstanding();
+            if($stockSet->find('symbol', $symbol) !== false)
+                $previousClose = $stockSet->getValueAsFloat('previousClose');
+            else
+                $previousClose = $quoteResponse->getPreviousClose(); // sometimes with data errors
 
+            $changePercent = round(($price / $previousClose) * 100 - 100, 2);
             $idStock = $stockDAO->get($symbol, 'symbol')->getValueAsInt('idStock');
 
+            $marketCap = round($price * $lastOutstandingShares);
             $quote = [
                 'idStock' => $idStock,
                 'price' => $price,
-                'volume' => $volume
+                'volume' => $volume,
+                'lastOutstandingShares' => $lastOutstandingShares,
+                'marketCap' => $marketCap,
+                'previousClose' => $previousClose,
             ];
             $stockDAO->update($quote);
+            $quote['marketCap'] = $this->formatMarketCap($marketCap);
+            $quote['price'] = $this->formatPrice($price);
+            $quote['changePercent'] = $this->formatChangePercent($changePercent);
             $quotes[] = $quote;
         }
 
