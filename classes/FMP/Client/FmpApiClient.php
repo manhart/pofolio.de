@@ -24,6 +24,8 @@ use pofolio\classes\FMP\Response\ShareFloat;
 use pofolio\classes\FMP\Response\StockDividend;
 use pofolio\classes\FMP\Response\StockDividendCalendar;
 use pofolio\classes\FMP\Response\StockList;
+use pofolio\classes\FMP\Response\StockSplit;
+use pofolio\classes\FMP\Response\StockSplitCalendar;
 use pofolio\classes\FMP\Response\UpgradesDowngrades;
 use pool\classes\Exception\CurlException;
 use function curl_close;
@@ -166,6 +168,18 @@ class FmpApiClient
         $from_string = $from?->format('Y-m-d');
         $to_string = $to?->format('Y-m-d');
         return StockDividendCalendar::create($this, from: $from_string, to: $to_string);
+    }
+
+    public function getStockSplit(string $symbol): StockSplit
+    {
+        return StockSplit::create($this, $symbol);
+    }
+
+    public function getStockSplitCalendar(?\DateTimeInterface $from = null, ?\DateTimeInterface $to = null): StockSplitCalendar
+    {
+        $from_string = $from?->format('Y-m-d');
+        $to_string = $to?->format('Y-m-d');
+        return StockSplitCalendar::create($this, from: $from_string, to: $to_string);
     }
 
     public function getPriceTarget(string $symbol): PriceTarget
