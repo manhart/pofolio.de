@@ -27,6 +27,8 @@ use pofolio\dao\mysql\pofolio\PriceTarget;
 use pofolio\dao\mysql\pofolio\Sector;
 use pofolio\dao\mysql\pofolio\ShareFloat;
 use pofolio\dao\mysql\pofolio\SIC;
+use pofolio\dao\mysql\pofolio\Split;
+use pofolio\dao\mysql\pofolio\SplitCalendar;
 use pofolio\dao\mysql\pofolio\Stock;
 use pofolio\dao\mysql\pofolio\UpgradesDowngrades;
 use pool\classes\Database\DataInterface;
@@ -101,7 +103,7 @@ $client = FmpApiClient::getInstance();
 
 
 
-$symbols = array_unique([/*'ALRM', 'UMI.BR', 'TNC', 'CRM', 'TEVA.TA', 'MBB.DE', 'KWS.DE', 'UHS', 'POS.VI', 'HIMS', 'VRNS', 'APH', 'COP.DE', 'UTDI.DE', 'AEM', 'MYTAY',
+$symbols = array_unique(['ALRM', 'UMI.BR', 'TNC', 'CRM', 'TEVA.TA', 'MBB.DE', 'KWS.DE', 'UHS', 'POS.VI', 'HIMS', 'VRNS', 'APH', 'COP.DE', 'UTDI.DE', 'AEM', 'MYTAY',
     'UNA.AS', 'HEIA.AS', 'CMC.DE', '0066.HK', 'DG.PA', 'TSM', 'EXTR', 'NOEJ.DE', 'IBC3.F', 'IS3N.DE', 'SAVE', 'UPST', 'RH', 'ENR.DE', 'WBD', '2HRA.DE',
     'IBC3.DE', 'ABR', 'BNR.DE', 'PRX.AS', 'KRN.DE', 'WDC', 'LSG.OL', 'HFG.DE', 'CTSH', 'SWKS', 'DBX', 'SSD', 'EUZ.DE', '690D.DE', 'BDT.DE', 'GIS',
     'PND.F', 'MOWI.OL', 'RI.PA', 'MAR', 'INTC', 'HOT.DE', '639.DE', 'EA', 'NEM.DE', 'DE', 'AZN.L', 'TMV.DE', 'LMT', 'BHP', 'UBER', '3RB.DE', '2587.T',
@@ -115,8 +117,10 @@ $symbols = array_unique([/*'ALRM', 'UMI.BR', 'TNC', 'CRM', 'TEVA.TA', 'MBB.DE', 
     'VOW.DE', 'VOW3.DE', '9988.HK', 'BABA', 'MTCH', 'BBZA.DE', 'BION.SW', 'NNND.F', '0700.HK', 'GSHD', 'CTM.F', 'KEYS', 'EFX', 'LXH', 'AUTO.OL', 'PFE',
     'BAYN.DE', 'PYPL', 'SSTK', 'DIS', 'NDX1.DE', 'YAR.OL', 'U', 'KNEBV.HE', 'T', 'ADN1.DE', 'SYF', 'BMY', 'PUM.DE', 'AGCO', 'P911.HM', 'PAH3.DE', 'P911.DE',
     'BAS.DE', 'GS7.DE', 'K', 'BMT.DE', 'MARR.MI', 'TSN', '2GB.DE', 'MDT', 'SWK', 'MMM', 'CMC', 'ABI.BR', '1NBA.DE', 'FPE.DE', 'MOL.BD', 'MYTAY', 'AEM.TO',
-    'LVS', '7309.T', 'VVSM.DE', 'IBKR', 'ST5.DE', 'HEN.DE', 'HEN3.DE', '1TY.DE',*/ 'NVJP.DE', 'DOCN', 'NGLB.DE', 'AAL.L', 'GSF.OL', 'B1C.F', '9888.HK',
+    'LVS', '7309.T', 'VVSM.DE', 'IBKR', 'ST5.DE', 'HEN.DE', 'HEN3.DE', '1TY.DE', 'NVJP.DE', 'DOCN', 'NGLB.DE', 'AAL.L', 'GSF.OL', 'B1C.F', '9888.HK',
     'B5A.DE', 'AR4.DE', 'COK.DE', 'KCO.DE', '3690.HK', 'AYX', 'SSYS', 'COMP', 'SEDG']);
+
+//$symbols = ['TTD'];
 
 foreach($symbols as $symbol) {
     try {
@@ -127,14 +131,15 @@ foreach($symbols as $symbol) {
         continue;
     }
 
-    shareFloatImporter($client, $symbol);
-    dividendImporter($client, $symbol);
-    priceTargetImporter($client, $symbol);
-    upgradesDowngradesImporter($client, $symbol);
-    historicalPriceImporter($client, $symbol);
-    incomeStatementImporter($client, $symbol);
-    balanceSheetStatementImporter($client, $symbol);
-    cashflowStatementImporter($client, $symbol);
+//    shareFloatImporter($client, $symbol);
+//    dividendImporter($client, $symbol);
+//    priceTargetImporter($client, $symbol);
+//    upgradesDowngradesImporter($client, $symbol);
+//    historicalPriceImporter($client, $symbol);
+//    incomeStatementImporter($client, $symbol);
+//    balanceSheetStatementImporter($client, $symbol);
+//    cashflowStatementImporter($client, $symbol);
+    splitImporter($client, $symbol);
 }
 
 
@@ -142,6 +147,10 @@ delistedCompaniesImporter($client);
 dividendCalendarImporter($client, new \DateTime('-1 month'), new \DateTime('+2 month'));
 dividendCalendarImporter($client, new \DateTime('+2 month'), new \DateTime('+4 month'));
 dividendCalendarImporter($client, new \DateTime('+4 month'), new \DateTime('+6 month'));
+
+splitCalendarImporter($client, new \DateTime('-1 month'), new \DateTime('+2 month'));
+splitCalendarImporter($client, new \DateTime('+2 month'), new \DateTime('+4 month'));
+splitCalendarImporter($client, new \DateTime('+4 month'), new \DateTime('+6 month'));
 die();
 $stockList = $client->getStockList();
 
@@ -162,6 +171,7 @@ foreach($stockList as $stock) {
 
     shareFloatImporter($client, $idStock);
     dividendImporter($client, $idStock);
+    splitImporter($client, $idStock);
     priceTargetImporter($client, $idStock);
     upgradesDowngradesImporter($client, $idStock);
     historicalPriceImporter($client, $idStock);
@@ -501,6 +511,67 @@ function dividendCalendarImporter(FmpApiClient $client, \DateTimeInterface $from
     }
 }
 
+function splitImporter(FmpApiClient $client, int|string $symbol): void
+{
+    [$idStock, $symbol] = extractSymbol($symbol);
+
+    $SplitDAO = Split::create();
+    $stockSplit = $client->getStockSplit($symbol);
+    echo 'Splits for: '.$symbol.LINE_BREAK;
+    $stockSplit->dump();
+
+    foreach($stockSplit as $ignored) {
+        $dividendData = [
+            'idStock' => $idStock,
+            'date' => $stockSplit->getDate(),
+            'numerator' => $stockSplit->getNumerator(),
+            'denominator' => $stockSplit->getDenominator(),
+        ];
+
+        if(!$SplitDAO->exists($idStock, $stockSplit->getDate())) {
+            $recordSet = $SplitDAO->insert($dividendData);
+            if($lastError = $recordSet->getLastError()) {
+                throw new RuntimeException($lastError['message'], $lastError['code']);
+            }
+        }
+    }
+}
+
+function splitCalendarImporter(FmpApiClient $client, \DateTimeInterface $from, \DateTimeInterface $to): void
+{
+    $splitCalendarDAO = SplitCalendar::create();
+    $splitCalendarResponse = $client->getStockSplitCalendar($from, $to);
+    echo 'SplitCalendar: '.LINE_BREAK;
+    $splitCalendarResponse->dump();
+
+    $stockDAO = Stock::create()->setColumns('idStock');
+    foreach($splitCalendarResponse as $ignored) {
+        $symbol = $splitCalendarResponse->getSymbol();
+        $idStock = $stockDAO->get($symbol, 'symbol')->getValueAsInt('idStock');
+        if(!$idStock) { // not imported yet
+            continue;
+        }
+        $splitCalendarData = [
+            'idStock' => $idStock,
+            'date' => $splitCalendarResponse->getDate(),
+            'numerator' => $splitCalendarResponse->getNumerator(),
+            'denominator' => $splitCalendarResponse->getDenominator(),
+        ];
+
+        if(!$splitCalendarDAO->exists($idStock, $splitCalendarResponse->getDate())) {
+            $recordSet = $splitCalendarDAO->insert($splitCalendarData);
+        }
+        else {
+            $idSplitCalendar = $splitCalendarDAO->setColumns('idDividendCalendar')->getMultiple(filter_rules: [['idStock', 'equal', $idStock], ['date', 'equal', $splitCalendarResponse->getDate()]])->getValueAsInt('idDividendCalendar');
+            $splitCalendarData['idDividendCalendar'] = $idSplitCalendar;
+            $recordSet = $splitCalendarDAO->update($splitCalendarData);
+        }
+        if($lastError = $recordSet->getLastError()) {
+            throw new RuntimeException($lastError['message'], $lastError['code']);
+        }
+    }
+}
+
 /**
  * @param FmpApiClient $client
  * @param int|string $symbol
@@ -574,14 +645,42 @@ function upgradesDowngradesImporter(FmpApiClient $client, string $symbol): void
 
 function historicalPriceImporter(FmpApiClient $client, string $symbol): void
 {
+    // yesterday
+    ($yesterday = new \DateTime('-1 day'))->setTime(0, 0);
+
+    // the day before yesterday
+    ($dayBeforeYesterday = new \DateTime('-2 day'))->setTime(0, 0);
+
+
     [$idStock, $symbol] = extractSymbol($symbol);
     $historicalPriceDAO = HistoricalPrice::create();
     $historicalPrice = $client->getHistoricalPrice($symbol, new \DateTime('-50 years'));
     echo 'HistoricalPrice for: '.$symbol.LINE_BREAK;
     $historicalPrice->dump();
 
-    foreach($historicalPrice as $ignored)
-    {
+    foreach($historicalPrice as $ignored) {
+
+        // if date of historical price is yesterday, then update stock with previous close
+        $previousClosingPrice = null;
+        if($historicalPrice->getDate() == $yesterday) {
+            $previousClosingPrice = $historicalPrice->getClose();
+        }
+
+        if($previousClosingPrice && $historicalPrice->getDate() == $dayBeforeYesterday) {
+            $stockDAO = Stock::create();
+            $stockData = [
+                'idStock' => $idStock,
+                'previousClose' => $historicalPrice->getClose(),
+                'changePercent' => $previousClosingPrice / $historicalPrice->getClose() * 100 - 100,
+                'change' => $previousClosingPrice - $historicalPrice->getClose(),
+            ];
+            $recordSet = $stockDAO->update($stockData);
+            if($lastError = $recordSet->getLastError()) {
+                throw new RuntimeException($lastError['message'], $lastError['code']);
+            }
+        }
+
+
         if($historicalPriceDAO->exists($idStock, $historicalPrice->getDate())) {
             continue;
         }
@@ -610,9 +709,24 @@ function historicalPriceImporter(FmpApiClient $client, string $symbol): void
             'vwap' => $historicalPrice->getVwap(),
             'changeOverTime' => $historicalPrice->getChangeOverTime(),
         ];
+
         $recordSet = $historicalPriceDAO->insert($historicalPriceData);
         if($lastError = $recordSet->getLastError()) {
             throw new RuntimeException($lastError['message'], $lastError['code']);
+        }
+        // if date of historical price is yesterday, then update stock with previous close
+        if($historicalPrice->getDate() == $yesterday) {
+            $stockDAO = Stock::create();
+            $stockData = [
+                'idStock' => $idStock,
+                'previousClose' => $historicalPrice->getClose(),
+                'changePercent' => $historicalPrice->getChangePercent(),
+                'change' => $historicalPrice->getChange(),
+            ];
+            $recordSet = $stockDAO->update($stockData);
+            if($lastError = $recordSet->getLastError()) {
+                throw new RuntimeException($lastError['message'], $lastError['code']);
+            }
         }
     }
 }
