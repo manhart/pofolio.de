@@ -10,6 +10,7 @@
 
 namespace pofolio\classes\FMP\Client;
 
+use pofolio\classes\FMP\Response\EtfList;
 use pofolio\classes\FMP\Response\Quote;
 use pofolio\classes\FMP\Response\QuoteShort;
 use pofolio\classes\FMP\Response\BalanceSheetStatement;
@@ -151,6 +152,11 @@ class FmpApiClient
     public function getStockList(): StockList
     {
         return StockList::create($this);
+    }
+
+    public function getEtfList(): EtfList
+    {
+        return EtfList::create($this);
     }
 
     public function getShareFloat(?string $symbol = null): ShareFloat
