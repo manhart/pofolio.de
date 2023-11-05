@@ -8,9 +8,7 @@
  * QuoteShort.php created on 03.11.23, 20:58.
  */
 
-namespace classes\FMP\Response;
-
-use pofolio\classes\FMP\Response\Response;
+namespace pofolio\classes\FMP\Response;
 
 class QuoteShort extends Response
 {

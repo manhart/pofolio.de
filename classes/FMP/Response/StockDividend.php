@@ -5,7 +5,7 @@
  * @copyright Copyright (c) 2023 Alexander Manhart IT
  * @authors Alexander Manhart
  *
- * Profile.php created on 27.09.23, 20:32.
+ * StockDividend.php created on 27.09.23, 20:32.
  */
 
 namespace pofolio\classes\FMP\Response;
