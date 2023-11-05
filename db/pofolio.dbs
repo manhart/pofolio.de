@@ -10,7 +10,7 @@
 			<column name="idReportedCurrency" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" />
 			<column name="fillingDate" type="DATE" jt="91" />
 			<column name="acceptedDate" type="DATETIME" jt="93" />
-			<column name="calendarYear" type="YEAR" length="4" jt="4" mandatory="y" unsigned="y" />
+			<column name="calendarYear" type="YEAR" length="4" jt="4" mandatory="y" />
 			<column name="timePeriod" type="CHAR" length="2" jt="1" mandatory="y" />
 			<column name="periodOrder" type="TINYINT" jt="-6" mandatory="y" unsigned="y" />
 			<column name="cashAndCashEquivalents" type="DECIMAL" length="17" decimal="0" jt="3" />
@@ -76,6 +76,9 @@
 			<fk name="fk_balancesheetstatement" to_schema="pofolio" to_table="Stock" >
 				<fk_column name="idStock" pk="idStock" />
 			</fk>
+			<fk name="fk_BalanceSheetStatement_Currency" to_schema="pofolio" to_table="Currency" >
+				<fk_column name="idReportedCurrency" pk="idCurrency" />
+			</fk>
 			<options><![CDATA[engine=InnoDB]]></options>
 		</table>
 		<table name="CashflowStatement" prior="BalanceSheetStatement_0" >
@@ -90,7 +93,7 @@
 			</column>
 			<column name="fillingDate" type="DATE" jt="91" />
 			<column name="acceptedDate" type="DATETIME" jt="93" />
-			<column name="calendarYear" type="YEAR" length="4" jt="4" mandatory="y" unsigned="y" />
+			<column name="calendarYear" type="YEAR" length="4" jt="4" mandatory="y" />
 			<column name="timePeriod" type="CHAR" length="2" jt="1" mandatory="y" />
 			<column name="periodOrder" type="TINYINT" jt="-6" mandatory="y" unsigned="y" />
 			<column name="netIncome" prior="cashAndCashEquivalents" type="DECIMAL" length="17" decimal="0" jt="3" />
@@ -142,6 +145,9 @@
 			<fk name="fk_balancesheetstatement_0" to_schema="pofolio" to_table="Stock" >
 				<fk_column name="idStock" pk="idStock" />
 			</fk>
+			<fk name="fk_CashflowStatement_Currency" to_schema="pofolio" to_table="Currency" >
+				<fk_column name="idReportedCurrency" pk="idCurrency" />
+			</fk>
 		</table>
 		<table name="Company" >
 			<column name="idStock" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
@@ -160,7 +166,7 @@
 			<column name="fiscalYearEndMonth" type="TINYINT" jt="-6" />
 			<column name="registrantName" type="VARCHAR" length="100" jt="12" />
 			<column name="taxIdentificationNumber" type="VARCHAR" length="32" jt="12" />
-			<column name="stateLocation" type="VARCHAR" length="3" jt="12" />
+			<column name="stateLocation" type="VARCHAR" length="24" jt="12" />
 			<column name="stateOfIncorporation" type="VARCHAR" length="2" jt="12" />
 			<column name="sicCode" type="SMALLINT" jt="5" unsigned="y" />
 			<column name="dcf" type="DECIMAL" length="10" decimal="2" jt="3" unsigned="y" />
@@ -316,7 +322,7 @@
 			<column name="volume" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
 			<column name="unadjustedVolume" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
 			<column name="change" type="DECIMAL" length="14" decimal="6" jt="3" mandatory="y" />
-			<column name="changePercent" type="DECIMAL" length="10" decimal="7" jt="3" mandatory="y" />
+			<column name="changePercent" type="DECIMAL" length="12" decimal="7" jt="3" mandatory="y" />
 			<column name="vwap" type="DECIMAL" length="10" decimal="2" jt="3" mandatory="y" unsigned="y" />
 			<column name="changeOverTime" type="DECIMAL" length="17" decimal="10" jt="3" mandatory="y" />
 			<column name="updated" type="DATETIME" jt="93" >
@@ -346,7 +352,7 @@
 			<column name="idReportedCurrency" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" />
 			<column name="fillingDate" type="DATE" jt="91" />
 			<column name="acceptedDate" type="DATETIME" jt="93" />
-			<column name="calendarYear" type="YEAR" length="4" jt="4" mandatory="y" unsigned="y" />
+			<column name="calendarYear" type="YEAR" length="4" jt="4" mandatory="y" />
 			<column name="timePeriod" type="ENUM" jt="12" mandatory="y" >
 				<defo><![CDATA['FY']]></defo>
 				<enumeration><![CDATA['FY','Q1','Q2','Q3','Q4']]></enumeration>
@@ -386,7 +392,7 @@
 				<column_options><![CDATA[ON UPDATE CURRENT_TIMESTAMP]]></column_options>
 			</column>
 			<column name="created" type="DATETIME" jt="93" mandatory="y" >
-				<defo><![CDATA[CURRENT_TIMESTAMP]]></defo>
+				<defo><![CDATA[current_timestamp()]]></defo>
 			</column>
 			<index name="pk_IncomeStatement" unique="PRIMARY_KEY" >
 				<column name="idIncomeStatement" />
@@ -395,6 +401,9 @@
 				<column name="idStock" />
 				<column name="calendarYear" />
 				<column name="timePeriod" />
+			</index>
+			<index name="fk_IncomeStatement_Currency" unique="NORMAL" >
+				<column name="idReportedCurrency" />
 			</index>
 			<fk name="fk_incomestatement_stock" to_schema="pofolio" to_table="Stock" >
 				<fk_column name="idStock" pk="idStock" />
@@ -539,6 +548,58 @@
 			</fk>
 			<options><![CDATA[engine=InnoDB]]></options>
 		</table>
+		<table name="Split" >
+			<column name="idSplit" type="BIGINT" jt="-5" mandatory="y" unsigned="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="idStock" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
+			<column name="date" type="DATE" jt="91" mandatory="y" />
+			<column name="numerator" type="DECIMAL" length="17" decimal="6" jt="3" mandatory="y" unsigned="y" />
+			<column name="denominator" type="INT" jt="4" mandatory="y" unsigned="y" />
+			<column name="updated" type="DATETIME" jt="93" >
+				<column_options><![CDATA[ON UPDATE CURRENT_TIMESTAMP]]></column_options>
+			</column>
+			<column name="created" type="DATETIME" jt="93" mandatory="y" >
+				<defo><![CDATA[current_timestamp()]]></defo>
+			</column>
+			<index name="pk_Split" unique="PRIMARY_KEY" >
+				<column name="idSplit" />
+			</index>
+			<index name="ui_Split_date" unique="UNIQUE_KEY" >
+				<column name="idStock" />
+				<column name="date" options="DESC" />
+			</index>
+			<fk name="fk_Split_Stock" to_schema="pofolio" to_table="Stock" >
+				<fk_column name="idStock" pk="idStock" />
+			</fk>
+			<options><![CDATA[engine=InnoDB]]></options>
+		</table>
+		<table name="SplitCalendar" >
+			<column name="idSplitCalendar" type="BIGINT" jt="-5" mandatory="y" unsigned="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="idStock" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
+			<column name="date" type="DATE" jt="91" mandatory="y" />
+			<column name="numerator" type="DECIMAL" length="17" decimal="6" jt="3" mandatory="y" unsigned="y" />
+			<column name="denominator" type="INT" jt="4" mandatory="y" unsigned="y" />
+			<column name="updated" type="DATETIME" jt="93" >
+				<column_options><![CDATA[ON UPDATE CURRENT_TIMESTAMP]]></column_options>
+			</column>
+			<column name="created" type="DATETIME" jt="93" mandatory="y" >
+				<defo><![CDATA[current_timestamp()]]></defo>
+			</column>
+			<index name="pk_SplitCalendar" unique="PRIMARY_KEY" >
+				<column name="idSplitCalendar" />
+			</index>
+			<index name="ui_SplitCalendar_date" unique="UNIQUE_KEY" >
+				<column name="idStock" />
+				<column name="date" options="DESC" />
+			</index>
+			<fk name="fk_SplitCalendar_Stock" to_schema="pofolio" to_table="Stock" >
+				<fk_column name="idStock" pk="idStock" />
+			</fk>
+			<options><![CDATA[engine=InnoDB]]></options>
+		</table>
 		<table name="Stock" prior="table" spec="" >
 			<column name="idStock" type="BIGINT" jt="-5" mandatory="y" unsigned="y" >
 				<identity><![CDATA[AUTO_INCREMENT]]></identity>
@@ -551,6 +612,9 @@
 			<column name="name" type="VARCHAR" length="255" jt="12" />
 			<column name="price" type="DECIMAL" length="10" decimal="2" jt="3" unsigned="y" />
 			<column name="volume" type="BIGINT" jt="-5" unsigned="y" />
+			<column name="previousClose" type="DECIMAL" length="10" decimal="2" jt="3" unsigned="y" />
+			<column name="change" prior="dailyChange" type="DECIMAL" length="14" decimal="6" jt="3" />
+			<column name="changePercent" type="DECIMAL" length="12" decimal="7" jt="3" />
 			<column name="idExchange" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" />
 			<column name="tradeable" type="TINYINT" jt="-6" mandatory="y" unsigned="y" >
 				<defo><![CDATA[1]]></defo>
@@ -568,6 +632,7 @@
 			<column name="lastFloatShares" type="BIGINT" jt="-5" unsigned="y" />
 			<column name="lastOutstandingShares" prior="latestOutstandingShares" type="BIGINT" jt="-5" unsigned="y" />
 			<column name="lastFreeFloat" type="DECIMAL" length="17" decimal="14" jt="3" unsigned="y" />
+			<column name="marketCap" type="DECIMAL" length="17" decimal="0" jt="3" mandatory="y" unsigned="y" />
 			<column name="ipoDate" type="DATE" jt="91" />
 			<column name="delistedDate" type="DATE" jt="91" />
 			<column name="updated" prior="modified" type="DATETIME" jt="93" >
@@ -658,23 +723,25 @@
 	</schema>
 	<layout name="MariaDb" id="Layout-2660" show_relation="columns" />
 	<layout name="financialmodelingprep" id="Layout-289" joined_routing="y" show_relation="columns" >
-		<entity schema="pofolio" name="BalanceSheetStatement" color="C1D8EE" x="432" y="1200" />
-		<entity schema="pofolio" name="CashflowStatement" color="3986C1" x="832" y="1200" />
-		<entity schema="pofolio" name="Company" color="C1D8EE" x="640" y="464" />
-		<entity schema="pofolio" name="Currency" color="C1D8EE" x="48" y="1024" />
-		<entity schema="pofolio" name="Dividend" color="C1D8EE" x="352" y="304" />
-		<entity schema="pofolio" name="DividendCalendar" color="3986C1" x="352" y="48" />
-		<entity schema="pofolio" name="Exchange" color="C1D8EE" x="48" y="624" />
-		<entity schema="pofolio" name="HistoricalPrice" color="C1D8EE" x="48" y="288" />
-		<entity schema="pofolio" name="IncomeStatement" color="C1D8EE" x="64" y="1216" />
-		<entity schema="pofolio" name="Industry" color="C1D8EE" x="48" y="768" />
-		<entity schema="pofolio" name="PriceTarget" color="C1D8EE" x="656" y="880" />
-		<entity schema="pofolio" name="SIC" color="C1D8EE" x="848" y="464" />
-		<entity schema="pofolio" name="Sector" color="C1D8EE" x="48" y="896" />
-		<entity schema="pofolio" name="ShareFloat" color="C1D8EE" x="640" y="256" />
-		<entity schema="pofolio" name="Stock" color="C1D8EE" x="336" y="640" />
-		<entity schema="pofolio" name="UpgradesDowngrades" color="C1D8EE" x="896" y="864" />
-		<callout x="1168" y="336" pointer="Round" >
+		<entity schema="pofolio" name="BalanceSheetStatement" color="C1D8EE" x="512" y="1472" />
+		<entity schema="pofolio" name="CashflowStatement" color="3986C1" x="976" y="1472" />
+		<entity schema="pofolio" name="Company" color="C1D8EE" x="736" y="656" />
+		<entity schema="pofolio" name="Currency" color="C1D8EE" x="128" y="1216" />
+		<entity schema="pofolio" name="Dividend" color="C1D8EE" x="448" y="496" />
+		<entity schema="pofolio" name="DividendCalendar" color="3986C1" x="448" y="240" />
+		<entity schema="pofolio" name="Exchange" color="C1D8EE" x="80" y="816" />
+		<entity schema="pofolio" name="HistoricalPrice" color="C1D8EE" x="80" y="464" />
+		<entity schema="pofolio" name="IncomeStatement" color="C1D8EE" x="48" y="1472" />
+		<entity schema="pofolio" name="Industry" color="C1D8EE" x="144" y="960" />
+		<entity schema="pofolio" name="PriceTarget" color="C1D8EE" x="752" y="1072" />
+		<entity schema="pofolio" name="SIC" color="C1D8EE" x="944" y="656" />
+		<entity schema="pofolio" name="Sector" color="C1D8EE" x="144" y="1088" />
+		<entity schema="pofolio" name="ShareFloat" color="C1D8EE" x="736" y="448" />
+		<entity schema="pofolio" name="Split" color="C1D8EE" x="128" y="256" />
+		<entity schema="pofolio" name="SplitCalendar" color="C1D8EE" x="112" y="48" />
+		<entity schema="pofolio" name="Stock" color="C1D8EE" x="432" y="832" />
+		<entity schema="pofolio" name="UpgradesDowngrades" color="C1D8EE" x="992" y="1056" />
+		<callout x="1264" y="528" pointer="Round" >
 			<comment><![CDATA[This is a layout - a diagram with tools.
 - Right-click the layout to create new tables.
 - Double-click table headers to edit.
