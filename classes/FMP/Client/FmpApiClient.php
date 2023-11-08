@@ -11,6 +11,7 @@
 namespace pofolio\classes\FMP\Client;
 
 use pofolio\classes\FMP\Exception\ResponseException;
+use pofolio\classes\FMP\Response\AvailableTradedList;
 use pofolio\classes\FMP\Response\BalanceSheetStatement;
 use pofolio\classes\FMP\Response\CashflowStatement;
 use pofolio\classes\FMP\Response\CIK;
@@ -244,14 +245,42 @@ class FmpApiClient
         return StockList::create($this);
     }
 
+    /**
+     * Our Exchange Traded Fund Search makes it easy to find the symbol for any ETF you're looking for. Simply enter the ETF's name and we'll
+     * return the symbol, name, and price.
+     *
+     * @return EtfList
+     * @throws ResponseException
+     * @link https://site.financialmodelingprep.com/developer/docs#exchange-traded-fund-search-stock-list
+     */
     public function getEtfList(): EtfList
     {
         return EtfList::create($this);
     }
 
+    /**
+     * Discover all companies with financial statements available on our API. Our comprehensive list covers major exchanges such as the NYSE and NASDAQ,
+     * as well as international exchanges. This list is regularly updated, so you can always find the information you need.
+     *
+     * @return FinancialStatementSymbolLists
+     * @throws ResponseException
+     * @link https://site.financialmodelingprep.com/developer/docs#statement-symbols-list-stock-list
+     */
     public function getFinancialStatementSymbolLists(): FinancialStatementSymbolLists
     {
         return FinancialStatementSymbolLists::create($this);
+    }
+
+    /**
+     * Discover all actively traded stocks with our Tradable Search feature. This comprehensive list includes over 70,000 stocks, with symbol, name, price, and exchange information for each company.
+     *
+     * @return AvailableTradedList
+     * @throws ResponseException
+     * @link https://site.financialmodelingprep.com/developer/docs#tradable-search-stock-list
+     */
+    public function getAvailableTradedList(): AvailableTradedList
+    {
+        return AvailableTradedList::create($this);
     }
 
     public function getShareFloat(?string $symbol = null): ShareFloat
