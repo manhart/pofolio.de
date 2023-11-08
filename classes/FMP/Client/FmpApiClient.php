@@ -11,6 +11,7 @@
 namespace pofolio\classes\FMP\Client;
 
 use pofolio\classes\FMP\Exception\ResponseException;
+use pofolio\classes\FMP\Response\CikSearch;
 use pofolio\classes\FMP\Response\Search;
 use pofolio\classes\FMP\Response\FinancialStatementSymbolLists;
 use pofolio\classes\FMP\Response\EtfList;
@@ -182,6 +183,20 @@ class FmpApiClient
     public function searchName(string $query, int $limit = null, string $exchange = null): SearchName
     {
         return SearchName::create($this, query: $query, limit: $limit, exchange: $exchange);
+    }
+
+    /**
+     * Discover CIK numbers for SEC-registered entities with our CIK Name Search.
+     *
+     * @param string $companyName The name of the company to search for.
+     *
+     * @return CikSearch The CIKSearch object for the specified company name.
+     * @throws ResponseException
+     * @link https://site.financialmodelingprep.com/developer/docs#cik-name-search-company-search
+     */
+    public function searchCikByName(string $companyName): CikSearch
+    {
+        return CikSearch::create($this, $companyName);
     }
 
     public function getProfile(string $symbol): Profile
