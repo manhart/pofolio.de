@@ -87,16 +87,19 @@ $stockTypes = $StockDAO->getColumnEnumValues('type');
 
 $client = FmpApiClient::getInstance();
 
-$search = $client->getCIK(1067983);
+/*
+$search = $client->getExchangeSymbols('NASDAQ');
 //$search->dump();
 while($search->valid()) {
-    echo 'CIK: '.$search->getCIK().LINE_BREAK;
+    echo 'Symbol: '.$search->getSymbol().LINE_BREAK;
     echo 'Name: '.$search->getName().LINE_BREAK;
+    echo 'Price: '.$search->getPrice().LINE_BREAK;
     $search->next();
 }
 echo 'Num results: '.count($search).LINE_BREAK;
 
 exit;
+*/
 
 // truncate all tables
 //ShareFloat::create()->truncate();
@@ -136,21 +139,20 @@ $symbols = array_unique(['ALRM', 'UMI.BR', 'TNC', 'CRM', 'TEVA.TA', 'MBB.DE', 'K
 foreach($symbols as $symbol) {
     try {
         stockImporter($client, $symbol);
+        shareFloatImporter($client, $symbol);
+        dividendImporter($client, $symbol);
+        priceTargetImporter($client, $symbol);
+        upgradesDowngradesImporter($client, $symbol);
+        historicalPriceImporter($client, $symbol);
+        incomeStatementImporter($client, $symbol);
+        balanceSheetStatementImporter($client, $symbol);
+        cashflowStatementImporter($client, $symbol);
+        splitImporter($client, $symbol);
     }
     catch(RuntimeException $e) {
         echo $e->getMessage().LINE_BREAK;
         continue;
     }
-
-//    shareFloatImporter($client, $symbol);
-//    dividendImporter($client, $symbol);
-//    priceTargetImporter($client, $symbol);
-//    upgradesDowngradesImporter($client, $symbol);
-//    historicalPriceImporter($client, $symbol);
-//    incomeStatementImporter($client, $symbol);
-//    balanceSheetStatementImporter($client, $symbol);
-//    cashflowStatementImporter($client, $symbol);
-    splitImporter($client, $symbol);
 }
 
 
