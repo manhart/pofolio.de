@@ -23,6 +23,7 @@ use pofolio\classes\FMP\Response\CompanyCoreInformation;
 use pofolio\classes\FMP\Response\CUSIP;
 use pofolio\classes\FMP\Response\DelistedCompanies;
 use pofolio\classes\FMP\Response\EtfList;
+use pofolio\classes\FMP\Response\ExchangeSymbols;
 use pofolio\classes\FMP\Response\FinancialStatementSymbolLists;
 use pofolio\classes\FMP\Response\HistoricalPrice;
 use pofolio\classes\FMP\Response\IncomeStatement;
@@ -314,7 +315,7 @@ class FmpApiClient
      * @throws ResponseException
      * @link https://site.financialmodelingprep.com/developer/docs#euronext-symbols-stock-list
      */
-    public function getAvailableEuronext(): AvailableEuronext
+    public function getAvailableEuronextSymbols(): AvailableEuronext
     {
         return AvailableEuronext::create($this);
     }
@@ -326,9 +327,14 @@ class FmpApiClient
      * @throws ResponseException
      * @link https://site.financialmodelingprep.com/developer/docs#symbol-changes-stock-list
      */
-    public function getSymbolChange(): SymbolChange
+    public function getSymbolChanges(): SymbolChange
     {
         return SymbolChange::create($this);
+    }
+
+    public function getExchangeSymbols(string $exchange): ExchangeSymbols
+    {
+        return ExchangeSymbols::create($this, $exchange);
     }
 
     public function getShareFloat(?string $symbol = null): ShareFloat
