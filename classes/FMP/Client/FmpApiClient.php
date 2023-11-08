@@ -16,6 +16,7 @@ use pofolio\classes\FMP\Response\BalanceSheetStatement;
 use pofolio\classes\FMP\Response\CashflowStatement;
 use pofolio\classes\FMP\Response\CIK;
 use pofolio\classes\FMP\Response\CIKSearch;
+use pofolio\classes\FMP\Response\CommitmentOfTradersReportList;
 use pofolio\classes\FMP\Response\CompanyCoreInformation;
 use pofolio\classes\FMP\Response\CUSIP;
 use pofolio\classes\FMP\Response\DelistedCompanies;
@@ -281,6 +282,20 @@ class FmpApiClient
     public function getAvailableTradedList(): AvailableTradedList
     {
         return AvailableTradedList::create($this);
+    }
+
+    /**
+     * The Commitment of Traders Report is a weekly report from the Commodity Futures Trading Commission (CFTC) that provides insights into the
+     * positions of market participants in various markets. Our Commitment of Traders Report tool makes it easy to access and analyze this valuable
+     * data, helping you to make more informed trading decisions.
+     *
+     * @return CommitmentOfTradersReportList
+     * @throws ResponseException
+     * @link https://site.financialmodelingprep.com/developer/docs#commitment-of-traders-report-stock-list
+     */
+    public function getCommitmentOfTradersReportList(): CommitmentOfTradersReportList
+    {
+        return CommitmentOfTradersReportList::create($this);
     }
 
     public function getShareFloat(?string $symbol = null): ShareFloat
