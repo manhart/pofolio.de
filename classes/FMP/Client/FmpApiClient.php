@@ -10,6 +10,7 @@
 
 namespace pofolio\classes\FMP\Client;
 
+use pofolio\classes\FMP\Exception\ResponseException;
 use pofolio\classes\FMP\Response\Search;
 use pofolio\classes\FMP\Response\FinancialStatementSymbolLists;
 use pofolio\classes\FMP\Response\EtfList;
@@ -23,6 +24,8 @@ use pofolio\classes\FMP\Response\HistoricalPrice;
 use pofolio\classes\FMP\Response\IncomeStatement;
 use pofolio\classes\FMP\Response\PriceTarget;
 use pofolio\classes\FMP\Response\Profile;
+use pofolio\classes\FMP\Response\SearchName;
+use pofolio\classes\FMP\Response\SearchTicker;
 use pofolio\classes\FMP\Response\ShareFloat;
 use pofolio\classes\FMP\Response\StockDividend;
 use pofolio\classes\FMP\Response\StockDividendCalendar;
@@ -149,10 +152,31 @@ class FmpApiClient
     /**
      * Search over 70,000 symbols by symbol name or company name, including cryptocurrencies, forex, stocks, etf and other financial instruments.
      * @link https://site.financialmodelingprep.com/developer/docs#general-search-company-search
+     * @throws ResponseException
      */
     public function search(string $query, int $limit = null, string $exchange = null): Search
     {
         return Search::create($this, query: $query, limit: $limit, exchange: $exchange);
+    }
+
+    /**
+     * Find ticker symbols and exchanges for both equity securities and exchange-traded funds (ETFs) by searching with the company name or ticker symbol.
+     * @link https://site.financialmodelingprep.com/developer/docs#ticker-search-company-search
+     * @throws ResponseException
+     */
+    public function searchTicker(string $query, int $limit = null, string $exchange = null): SearchTicker
+    {
+        return SearchTicker::create($this, query: $query, limit: $limit, exchange: $exchange);
+    }
+
+    /**
+     * Find ticker symbols and exchange information for equity securities and exchange-traded funds (ETFs) by searching with the company name.
+     * @link https://site.financialmodelingprep.com/developer/docs#name-search-company-search
+     * @throws ResponseException
+     */
+    public function searchName(string $query, int $limit = null, string $exchange = null): SearchName
+    {
+        return SearchName::create($this, query: $query, limit: $limit, exchange: $exchange);
     }
 
     public function getProfile(string $symbol): Profile
