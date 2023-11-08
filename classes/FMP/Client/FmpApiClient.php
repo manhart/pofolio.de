@@ -15,6 +15,7 @@ use pofolio\classes\FMP\Response\AvailableTradedList;
 use pofolio\classes\FMP\Response\BalanceSheetStatement;
 use pofolio\classes\FMP\Response\CashflowStatement;
 use pofolio\classes\FMP\Response\CIK;
+use pofolio\classes\FMP\Response\CIKList;
 use pofolio\classes\FMP\Response\CIKSearch;
 use pofolio\classes\FMP\Response\CommitmentOfTradersReportList;
 use pofolio\classes\FMP\Response\CompanyCoreInformation;
@@ -296,6 +297,11 @@ class FmpApiClient
     public function getCommitmentOfTradersReportList(): CommitmentOfTradersReportList
     {
         return CommitmentOfTradersReportList::create($this);
+    }
+
+    public function getCIKList(): CIKList
+    {
+        return CIKList::create($this);
     }
 
     public function getShareFloat(?string $symbol = null): ShareFloat
