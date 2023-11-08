@@ -134,7 +134,7 @@ class FmpApiClient
     {
         while($params && !\is_string(\array_key_first($params))) {
             $param = \array_shift($params);
-            $endpoint .= '/'.(\is_array($param) ? \implode(',', $param) : $param);
+            $endpoint .= '/' . (\is_array($param) ? \implode(',', $param) : $param);
         }
         $params['apikey'] = $this->apiKey;
         $query = \http_build_query($params);
@@ -151,8 +151,13 @@ class FmpApiClient
 
     /**
      * Search over 70,000 symbols by symbol name or company name, including cryptocurrencies, forex, stocks, etf and other financial instruments.
-     * @link https://site.financialmodelingprep.com/developer/docs#general-search-company-search
+     *
+     * @param string $query The query to search for.
+     * @param int|null $limit The maximum amount of results to return.
+     * @param string|null $exchange The short exchange name to search in.
+     *
      * @throws ResponseException
+     * @link https://site.financialmodelingprep.com/developer/docs#general-search-company-search
      */
     public function search(string $query, int $limit = null, string $exchange = null): Search
     {
@@ -238,8 +243,12 @@ class FmpApiClient
         return UpgradesDowngrades::create($this, symbol: $symbol);
     }
 
-    public function getHistoricalPrice(string $symbol, ?\DateTimeInterface $from = null, ?\DateTimeInterface $to = null, ?int $timeseries = null): HistoricalPrice
-    {
+    public function getHistoricalPrice(
+        string $symbol,
+        ?\DateTimeInterface $from = null,
+        ?\DateTimeInterface $to = null,
+        ?int $timeseries = null
+    ): HistoricalPrice {
         $from_string = $from?->format('Y-m-d');
         $to_string = $to?->format('Y-m-d');
         return HistoricalPrice::create($this, $symbol, from: $from_string, to: $to_string, timeseries: $timeseries);
@@ -255,13 +264,21 @@ class FmpApiClient
         return DelistedCompanies::create($this);
     }
 
-    public function getIncomeStatement(string $symbol, ?string $period = IncomeStatement::PERIOD_ANNUAL, ?string $dataType = 'json', ?int $limit = null): IncomeStatement
-    {
+    public function getIncomeStatement(
+        string $symbol,
+        ?string $period = IncomeStatement::PERIOD_ANNUAL,
+        ?string $dataType = 'json',
+        ?int $limit = null
+    ): IncomeStatement {
         return IncomeStatement::create($this, $symbol, limit: $limit, period: $period);
     }
 
-    public function getBalanceSheetStatement(string|int $symbolOrCIK, ?string $period = IncomeStatement::PERIOD_ANNUAL, ?string $dataType = 'json', ?int $limit = null): BalanceSheetStatement
-    {
+    public function getBalanceSheetStatement(
+        string|int $symbolOrCIK,
+        ?string $period = IncomeStatement::PERIOD_ANNUAL,
+        ?string $dataType = 'json',
+        ?int $limit = null
+    ): BalanceSheetStatement {
         if(is_int($symbolOrCIK)) {
             // format CIK as string
             $symbolOrCIK = \str_pad((string)$symbolOrCIK, 10, '0', \STR_PAD_LEFT);
@@ -269,8 +286,12 @@ class FmpApiClient
         return BalanceSheetStatement::create($this, $symbolOrCIK, limit: $limit, period: $period);
     }
 
-    public function getCashflowStatement(string|int $symbolOrCIK, ?string $period = IncomeStatement::PERIOD_ANNUAL, ?string $dataType = 'json', ?int $limit = null): CashflowStatement
-    {
+    public function getCashflowStatement(
+        string|int $symbolOrCIK,
+        ?string $period = IncomeStatement::PERIOD_ANNUAL,
+        ?string $dataType = 'json',
+        ?int $limit = null
+    ): CashflowStatement {
         if(is_int($symbolOrCIK)) {
             // format CIK as string
             $symbolOrCIK = \str_pad((string)$symbolOrCIK, 10, '0', \STR_PAD_LEFT);
