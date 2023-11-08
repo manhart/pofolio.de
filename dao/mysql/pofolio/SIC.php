@@ -31,6 +31,6 @@ class SIC extends PofolioDAO
         $filter = [
             ['sicCode', 'equal', $sicCode]
         ];
-        return $this->getCount(filter_rules: $filter)->getValueAsBool('count');
+        return $this->getCount(filter: $filter)->getValueAsBool('count');
     }
 }

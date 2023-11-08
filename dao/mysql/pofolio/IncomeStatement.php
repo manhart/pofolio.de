@@ -74,6 +74,6 @@ class IncomeStatement extends PofolioDAO
             ['calendarYear', 'equal', $calendarYear],
             ['timePeriod', 'equal', $period]
         ];
-        return $this->getCount(filter_rules: $filter)->getValueAsBool('count');
+        return $this->getCount(filter: $filter)->getValueAsBool('count');
     }
 }

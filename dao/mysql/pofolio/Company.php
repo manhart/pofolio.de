@@ -48,6 +48,6 @@ class Company extends PofolioDAO
         $filter = [
             ['idStock', 'equal', $idStock]
         ];
-        return $this->getCount(filter_rules: $filter)->getValueAsBool('count');
+        return $this->getCount(filter: $filter)->getValueAsBool('count');
     }
 }

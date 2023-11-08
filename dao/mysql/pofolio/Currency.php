@@ -30,6 +30,6 @@ class Currency extends PofolioDAO
         $filter = [
             ['currency', 'equal', $currency]
         ];
-        return $this->getCount(filter_rules: $filter)->getValueAsBool('count');
+        return $this->getCount(filter: $filter)->getValueAsBool('count');
     }
 }

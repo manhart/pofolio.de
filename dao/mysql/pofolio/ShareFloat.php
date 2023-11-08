@@ -36,6 +36,6 @@ class ShareFloat extends PofolioDAO
             ['idStock', 'equal', $idStock],
             ['date', 'equal', $date],
         ];
-        return $this->getCount(filter_rules: $filter)->getValueAsBool('count');
+        return $this->getCount(filter: $filter)->getValueAsBool('count');
     }
 }

@@ -132,7 +132,7 @@ for($i = 0; $i < $count; $i++) {
     $LanguageDAO->setColumns(
         'Language.idLanguage',
     );
-    $languageSet = $LanguageDAO->getMultiple(filter_rules: [['Language.code', 'equal', $mainLanguage]]);
+    $languageSet = $LanguageDAO->getMultiple(filter: [['Language.code', 'equal', $mainLanguage]]);
     if(count($languageSet)) {
         $countryData['idLanguage'] = $languageSet->getValueAsInt('idLanguage');
     }
@@ -152,7 +152,7 @@ for($i = 0; $i < $count; $i++) {
             ['Country.isoCode', 'equal', $iso3316_alpha2]
         ];
 
-        $countrySet = $CountryDAO->getMultiple(filter_rules: $filter);
+        $countrySet = $CountryDAO->getMultiple(filter: $filter);
         if(count($countrySet)) {
             if($countrySet->getValueAsBool('blockUpdate')) {
                 continue;
@@ -184,7 +184,7 @@ foreach($locales as $locale) {
     $languageFilter = [
         ['Language.code', 'equal', $primaryLanguage]
     ];
-    $languageSet = $LanguageDAO->getMultiple(filter_rules: $languageFilter);
+    $languageSet = $LanguageDAO->getMultiple(filter: $languageFilter);
     if(count($languageSet)) {
         // update
         $idLanguage = $languageSet->getValueAsInt('idLanguage');
@@ -212,7 +212,7 @@ foreach($locales as $locale) {
     ];
 
     // determine country
-    $countrySet = $CountryDAO->getMultiple(filter_rules: $countryFilter);
+    $countrySet = $CountryDAO->getMultiple(filter: $countryFilter);
     if(count($countrySet)) {
         $localeData['idCountry'] = $countrySet->getValueAsInt('idCountry');
     }
@@ -221,7 +221,7 @@ foreach($locales as $locale) {
     $localeFilter = [
         ['Locale.locale', 'equal', $locale]
     ];
-    $locales_exists = $LocaleDAO->getCount(filter_rules: $localeFilter)->getValueAsBool('count');
+    $locales_exists = $LocaleDAO->getCount(filter: $localeFilter)->getValueAsBool('count');
 
     if(!$locales_exists) {
         $LocaleDAO->insert($localeData);
@@ -230,7 +230,7 @@ foreach($locales as $locale) {
         $LocaleDAO->setColumns(
             'Locale.idLocale',
         );
-        $idLocales = $LocaleDAO->getMultiple(filter_rules: $localeFilter)->getValueAsInt('idLocale');
+        $idLocales = $LocaleDAO->getMultiple(filter: $localeFilter)->getValueAsInt('idLocale');
         $localeData['idLocale'] = $idLocales;
 
         $LocaleDAO->update($localeData);

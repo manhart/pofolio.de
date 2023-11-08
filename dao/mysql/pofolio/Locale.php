@@ -33,6 +33,6 @@ class Locale extends PofolioDAO
         $filter = [
             ['locale', 'equal', $locale]
         ];
-        return $this->getCount(filter_rules: $filter)->getValueAsBool('count');
+        return $this->getCount(filter: $filter)->getValueAsBool('count');
     }
 }

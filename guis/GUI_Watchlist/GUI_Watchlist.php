@@ -65,7 +65,7 @@ class GUI_Watchlist extends \GUI_Module
                 $filterRules[] = [$item['field'], $item['type'], "%{$item['value']}%"];
             }
         }
-        $stockSet = $stockDAO->getMultiple(filter_rules: $filterRules, sorting: $sorting, limit: $limit, options: ['SQL_CALC_FOUND_ROWS']);
+        $stockSet = $stockDAO->getMultiple(filter: $filterRules, sorting: $sorting, limit: $limit, options: ['SQL_CALC_FOUND_ROWS']);
 
         // calc last page
         $amountOfRows = $stockDAO->foundRows();
@@ -100,7 +100,7 @@ class GUI_Watchlist extends \GUI_Module
         }
         $stockDAO = Stock::create();
         $stockDAO->setColumns('idStock', 'symbol', 'previousClose');
-        $stockSet = $stockDAO->getMultiple(filter_rules: [['idStock', 'in', $stockIds]]);
+        $stockSet = $stockDAO->getMultiple(filter: [['idStock', 'in', $stockIds]]);
 
         $quoteResponse = FmpApiClient::getInstance()->getQuote($stockSet->getFieldData('symbol'));
 

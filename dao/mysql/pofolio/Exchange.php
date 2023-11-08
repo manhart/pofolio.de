@@ -31,6 +31,6 @@ class Exchange extends PofolioDAO
         $filter = [
             ['exchangeShortName', 'equal', $exchangeShortName]
         ];
-        return $this->getCount(filter_rules: $filter)->getValueAsBool('count');
+        return $this->getCount(filter: $filter)->getValueAsBool('count');
     }
 }

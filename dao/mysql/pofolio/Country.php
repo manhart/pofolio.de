@@ -44,6 +44,6 @@ class Country extends PofolioDAO
         $filter = [
             ['isoCode', 'equal', $iso3316_alpha2]
         ];
-        return $this->getCount(filter_rules: $filter)->getValueAsBool('count');
+        return $this->getCount(filter: $filter)->getValueAsBool('count');
     }
 }

@@ -501,7 +501,7 @@ function dividendCalendarImporter(FmpApiClient $client, \DateTimeInterface $from
             $recordSet = $dividendCalendarDAO->insert($dividendCalendarData);
         }
         else {
-            $idDividendCalendar = $dividendCalendarDAO->setColumns('idDividendCalendar')->getMultiple(filter_rules: [['idStock', 'equal', $idStock], ['date', 'equal', $dividendCalendarResponse->getDate()]])->getValueAsInt('idDividendCalendar');
+            $idDividendCalendar = $dividendCalendarDAO->setColumns('idDividendCalendar')->getMultiple(filter: [['idStock', 'equal', $idStock], ['date', 'equal', $dividendCalendarResponse->getDate()]])->getValueAsInt('idDividendCalendar');
             $dividendCalendarData['idDividendCalendar'] = $idDividendCalendar;
             $recordSet = $dividendCalendarDAO->update($dividendCalendarData);
         }
@@ -562,7 +562,7 @@ function splitCalendarImporter(FmpApiClient $client, \DateTimeInterface $from, \
             $recordSet = $splitCalendarDAO->insert($splitCalendarData);
         }
         else {
-            $idSplitCalendar = $splitCalendarDAO->setColumns('idDividendCalendar')->getMultiple(filter_rules: [['idStock', 'equal', $idStock], ['date', 'equal', $splitCalendarResponse->getDate()]])->getValueAsInt('idDividendCalendar');
+            $idSplitCalendar = $splitCalendarDAO->setColumns('idDividendCalendar')->getMultiple(filter: [['idStock', 'equal', $idStock], ['date', 'equal', $splitCalendarResponse->getDate()]])->getValueAsInt('idDividendCalendar');
             $splitCalendarData['idDividendCalendar'] = $idSplitCalendar;
             $recordSet = $splitCalendarDAO->update($splitCalendarData);
         }
@@ -834,7 +834,7 @@ function incomeStatementImporter(FmpApiClient $client, string $symbol): void
                     ['calendarYear', 'equal', $incomeStatement->getCalendarYear()],
                     ['timePeriod', 'equal', $incomeStatement->getPeriod()]
                 ];
-                $idIncomeStatement = $incomeStatementDAO->setColumns('idIncomeStatement')->getMultiple(filter_rules: $filter_rules)->getValueAsInt('idIncomeStatement');
+                $idIncomeStatement = $incomeStatementDAO->setColumns('idIncomeStatement')->getMultiple(filter: $filter_rules)->getValueAsInt('idIncomeStatement');
                 $incomeStatementData['idIncomeStatement'] = $idIncomeStatement;
                 $recordSet = $incomeStatementDAO->update($incomeStatementData);
             }
@@ -949,7 +949,7 @@ function balanceSheetStatementImporter(FmpApiClient $client, string $symbol): vo
                     ['calendarYear', 'equal', $balanceSheetStatement->getCalendarYear()],
                     ['timePeriod', 'equal', $balanceSheetStatement->getPeriod()]
                 ];
-                $idBalanceSheetStatement = $balanceSheetStatementDAO->setColumns('idBalanceSheetStatement')->getMultiple(filter_rules: $filter_rules)->getValueAsInt('idBalanceSheetStatement');
+                $idBalanceSheetStatement = $balanceSheetStatementDAO->setColumns('idBalanceSheetStatement')->getMultiple(filter: $filter_rules)->getValueAsInt('idBalanceSheetStatement');
                 $balanceSheetStatementData['idBalanceSheetStatement'] = $idBalanceSheetStatement;
                 $recordSet = $balanceSheetStatementDAO->update($balanceSheetStatementData);
             }
@@ -1051,7 +1051,7 @@ function cashflowStatementImporter(FmpApiClient $client, string $symbol): void
                     ['calendarYear', 'equal', $cashflowStatement->getCalendarYear()],
                     ['timePeriod', 'equal', $cashflowStatement->getPeriod()]
                 ];
-                $idCashflowStatement = $cashflowStatementDAO->setColumns('idCashflowStatement')->getMultiple(filter_rules: $filter_rules)->getValueAsInt('idCashflowStatement');
+                $idCashflowStatement = $cashflowStatementDAO->setColumns('idCashflowStatement')->getMultiple(filter: $filter_rules)->getValueAsInt('idCashflowStatement');
                 $cashflowStatementData['idCashflowStatement'] = $idCashflowStatement;
                 $recordSet = $cashflowStatementDAO->update($cashflowStatementData);
             }
@@ -1072,7 +1072,7 @@ function refreshShareFloat(int|string $symbol): void
 {
     [$idStock, $symbol] = extractSymbol($symbol);
     $shareFloatDAO = ShareFloat::create();
-    $recordSet = $shareFloatDAO->getMultiple(filter_rules: [['idStock', 'equal', $idStock]], sorting: ['date' => 'DESC'], limit: [1]);
+    $recordSet = $shareFloatDAO->getMultiple(filter: [['idStock', 'equal', $idStock]], sorting: ['date' => 'DESC'], limit: [1]);
     if($lastError = $recordSet->getLastError()) {
         throw new RuntimeException($lastError['message'], $lastError['code']);
     }

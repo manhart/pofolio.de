@@ -109,6 +109,6 @@ class Stock extends PofolioDAO
         $filter = [
             ['symbol', 'equal', $symbol]
         ];
-        return $this->getCount(filter_rules: $filter)->getValueAsBool('count');
+        return $this->getCount(filter: $filter)->getValueAsBool('count');
     }
 }

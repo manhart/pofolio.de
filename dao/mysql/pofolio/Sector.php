@@ -30,6 +30,6 @@ class Sector extends PofolioDAO
         $filter = [
             ['sector', 'equal', $sector]
         ];
-        return $this->getCount(filter_rules: $filter)->getValueAsBool('count');
+        return $this->getCount(filter: $filter)->getValueAsBool('count');
     }
 }

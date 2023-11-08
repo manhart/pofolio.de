@@ -30,6 +30,6 @@ class Industry extends PofolioDAO
         $filter = [
             ['industry', 'equal', $industry]
         ];
-        return $this->getCount(filter_rules: $filter)->getValueAsBool('count');
+        return $this->getCount(filter: $filter)->getValueAsBool('count');
     }
 }
