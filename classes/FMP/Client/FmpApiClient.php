@@ -11,7 +11,8 @@
 namespace pofolio\classes\FMP\Client;
 
 use pofolio\classes\FMP\Exception\ResponseException;
-use pofolio\classes\FMP\Response\CikSearch;
+use pofolio\classes\FMP\Response\CIK;
+use pofolio\classes\FMP\Response\CIKSearch;
 use pofolio\classes\FMP\Response\Search;
 use pofolio\classes\FMP\Response\FinancialStatementSymbolLists;
 use pofolio\classes\FMP\Response\EtfList;
@@ -190,13 +191,22 @@ class FmpApiClient
      *
      * @param string $companyName The name of the company to search for.
      *
-     * @return CikSearch The CIKSearch object for the specified company name.
+     * @return CIKSearch The CIKSearch object for the specified company name.
      * @throws ResponseException
      * @link https://site.financialmodelingprep.com/developer/docs#cik-name-search-company-search
      */
-    public function searchCikByName(string $companyName): CikSearch
+    public function searchCIKByName(string $companyName): CIKSearch
     {
-        return CikSearch::create($this, $companyName);
+        return CIKSearch::create($this, $companyName);
+    }
+
+    public function getCIK(string|int $CIK): CIK
+    {
+        if(is_int($CIK)) {
+            // format CIK as string
+            $CIK = \str_pad((string)$CIK, 10, '0', \STR_PAD_LEFT);
+        }
+        return CIK::create($this, $CIK);
     }
 
     public function getProfile(string $symbol): Profile
