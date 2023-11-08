@@ -39,6 +39,7 @@ use pofolio\classes\FMP\Response\StockDividendCalendar;
 use pofolio\classes\FMP\Response\StockList;
 use pofolio\classes\FMP\Response\StockSplit;
 use pofolio\classes\FMP\Response\StockSplitCalendar;
+use pofolio\classes\FMP\Response\SymbolChange;
 use pofolio\classes\FMP\Response\UpgradesDowngrades;
 use pool\classes\Exception\CurlException;
 use function curl_close;
@@ -318,6 +319,17 @@ class FmpApiClient
         return AvailableEuronext::create($this);
     }
 
+    /**
+     * Stay up-to-date on the latest symbol changes with our easy-to-use tool. Track symbol changes due to mergers, acquisitions, stock splits, and name changes.
+     *
+     * @return SymbolChange
+     * @throws ResponseException
+     * @link https://site.financialmodelingprep.com/developer/docs#symbol-changes-stock-list
+     */
+    public function getSymbolChange(): SymbolChange
+    {
+        return SymbolChange::create($this);
+    }
 
     public function getShareFloat(?string $symbol = null): ShareFloat
     {
