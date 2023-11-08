@@ -10,6 +10,7 @@
 
 namespace pofolio\classes\FMP\Client;
 
+use pofolio\classes\FMP\Response\Search;
 use pofolio\classes\FMP\Response\FinancialStatementSymbolLists;
 use pofolio\classes\FMP\Response\EtfList;
 use pofolio\classes\FMP\Response\Quote;
@@ -143,6 +144,15 @@ class FmpApiClient
     public function getRequests(): int
     {
         return $this->requests;
+    }
+
+    /**
+     * Search over 70,000 symbols by symbol name or company name, including cryptocurrencies, forex, stocks, etf and other financial instruments.
+     * @link https://site.financialmodelingprep.com/developer/docs#general-search-company-search
+     */
+    public function search(string $query, int $limit = null, string $exchange = null): Search
+    {
+        return Search::create($this, query: $query, limit: $limit, exchange: $exchange);
     }
 
     public function getProfile(string $symbol): Profile
