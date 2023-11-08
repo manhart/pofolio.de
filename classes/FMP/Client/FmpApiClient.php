@@ -11,21 +11,22 @@
 namespace pofolio\classes\FMP\Client;
 
 use pofolio\classes\FMP\Exception\ResponseException;
-use pofolio\classes\FMP\Response\CIK;
-use pofolio\classes\FMP\Response\CIKSearch;
-use pofolio\classes\FMP\Response\Search;
-use pofolio\classes\FMP\Response\FinancialStatementSymbolLists;
-use pofolio\classes\FMP\Response\EtfList;
-use pofolio\classes\FMP\Response\Quote;
-use pofolio\classes\FMP\Response\QuoteShort;
 use pofolio\classes\FMP\Response\BalanceSheetStatement;
 use pofolio\classes\FMP\Response\CashflowStatement;
+use pofolio\classes\FMP\Response\CIK;
+use pofolio\classes\FMP\Response\CIKSearch;
 use pofolio\classes\FMP\Response\CompanyCoreInformation;
+use pofolio\classes\FMP\Response\CUSIP;
 use pofolio\classes\FMP\Response\DelistedCompanies;
+use pofolio\classes\FMP\Response\EtfList;
+use pofolio\classes\FMP\Response\FinancialStatementSymbolLists;
 use pofolio\classes\FMP\Response\HistoricalPrice;
 use pofolio\classes\FMP\Response\IncomeStatement;
 use pofolio\classes\FMP\Response\PriceTarget;
 use pofolio\classes\FMP\Response\Profile;
+use pofolio\classes\FMP\Response\Quote;
+use pofolio\classes\FMP\Response\QuoteShort;
+use pofolio\classes\FMP\Response\Search;
 use pofolio\classes\FMP\Response\SearchName;
 use pofolio\classes\FMP\Response\SearchTicker;
 use pofolio\classes\FMP\Response\ShareFloat;
@@ -200,6 +201,15 @@ class FmpApiClient
         return CIKSearch::create($this, $companyName);
     }
 
+    /**
+     * Quickly find registered company names linked to SEC-registered entities using their CIK Number with our CIK Search
+     *
+     * @param string|int $CIK The Central Index Number to search for.
+     *
+     * @return CIK
+     * @throws ResponseException
+     * @link https://site.financialmodelingprep.com/developer/docs#cik-search-company-search
+     */
     public function getCIK(string|int $CIK): CIK
     {
         if(is_int($CIK)) {
@@ -207,6 +217,21 @@ class FmpApiClient
             $CIK = \str_pad((string)$CIK, 10, '0', \STR_PAD_LEFT);
         }
         return CIK::create($this, $CIK);
+    }
+
+    /**
+     * Access information about financial instruments and securities by simply entering their unique CUSIP (Committee on Uniform Securities Identification
+     * Procedures) numbers with our CUSIP Search.
+     *
+     * @param string $CUSIP The CUSIP to search for.
+     *
+     * @return CUSIP
+     * @throws ResponseException
+     * @link https://site.financialmodelingprep.com/developer/docs#cusip-search-company-search
+     */
+    public function getCUSIP(string $CUSIP): CUSIP
+    {
+        return CUSIP::create($this, $CUSIP);
     }
 
     public function getProfile(string $symbol): Profile
