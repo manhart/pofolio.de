@@ -11,6 +11,7 @@
 namespace pofolio\classes\FMP\Client;
 
 use pofolio\classes\FMP\Exception\ResponseException;
+use pofolio\classes\FMP\Response\AvailableEuronext;
 use pofolio\classes\FMP\Response\AvailableTradedList;
 use pofolio\classes\FMP\Response\BalanceSheetStatement;
 use pofolio\classes\FMP\Response\CashflowStatement;
@@ -303,6 +304,20 @@ class FmpApiClient
     {
         return CIKList::create($this);
     }
+
+    /**
+     * Find all symbols for stocks traded on Euronext exchanges with our comprehensive list. Euronext is one of the largest exchanges in Europe, and our
+     * list includes stocks from a wide range of industries.
+     *
+     * @return AvailableEuronext
+     * @throws ResponseException
+     * @link https://site.financialmodelingprep.com/developer/docs#euronext-symbols-stock-list
+     */
+    public function getAvailableEuronext(): AvailableEuronext
+    {
+        return AvailableEuronext::create($this);
+    }
+
 
     public function getShareFloat(?string $symbol = null): ShareFloat
     {
