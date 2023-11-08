@@ -32,9 +32,14 @@ class IncomeStatement extends Response
         return $this->getResponseValueAsString('reportedCurrency');
     }
 
-    public function getCIK(): ?int
+    public function getCIKAsInt(): ?int
     {
         return $this->getResponseValueAsInt('cik') ?: null;
+    }
+
+    public function getCIK(): ?string
+    {
+        return $this->getResponseValue('cik') ?: null;
     }
 
     public function getFillingDate(): ?\DateTimeInterface

@@ -117,9 +117,14 @@ class Profile extends Response
     /**
      * @return int|null Central Index Key
      */
-    public function getCIK(): ?int
+    public function getCIKAsInt(): ?int
     {
         return $this->getResponseValueAsInt('cik') ?: null;
+    }
+
+    public function getCIK(): ?string
+    {
+        return $this->getResponseValue('cik');
     }
 
     public function getISIN(): ?string

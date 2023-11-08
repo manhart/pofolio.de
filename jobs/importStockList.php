@@ -87,6 +87,17 @@ $stockTypes = $StockDAO->getColumnEnumValues('type');
 
 $client = FmpApiClient::getInstance();
 
+$search = $client->getCIK(1067983);
+//$search->dump();
+while($search->valid()) {
+    echo 'CIK: '.$search->getCIK().LINE_BREAK;
+    echo 'Name: '.$search->getName().LINE_BREAK;
+    $search->next();
+}
+echo 'Num results: '.count($search).LINE_BREAK;
+
+exit;
+
 // truncate all tables
 //ShareFloat::create()->truncate();
 //Dividend::create()->truncate();
@@ -304,7 +315,7 @@ function stockImporter(FmpApiClient $client, string $symbol, ?string $type = nul
         'idCurrency' => $idCurrency ?? null,
         'ISIN' => $Profile->getISIN(),
         'tradeable' => $Profile->isActivelyTrading(),
-        'CIK' => $Profile->getCIK() ?: null,
+        'CIK' => $Profile->getCIKAsInt() ?: null,
         'CUSIP' => $Profile->getCUSIP(),
         'idIndustry' => $idIndustry ?? null,
         'idSector' => $idSector ?? null,
@@ -1005,7 +1016,7 @@ function cashflowStatementImporter(FmpApiClient $client, string $symbol): void
                 'idStock' => $idStock,
                 'date' => $cashflowStatement->getDate(),
                 'idReportedCurrency' => $idReportedCurrency,
-                'CIK' => $cashflowStatement->getCIK(),
+                'CIK' => $cashflowStatement->getCIKAsInt(),
                 'fillingDate' => $cashflowStatement->getFillingDate(),
                 'acceptedDate' => $cashflowStatement->getAcceptedDate(),
                 'calendarYear' => $calendarYear,
