@@ -24,6 +24,7 @@ use pofolio\classes\FMP\Response\CUSIP;
 use pofolio\classes\FMP\Response\DelistedCompanies;
 use pofolio\classes\FMP\Response\EtfList;
 use pofolio\classes\FMP\Response\ExchangeSymbols;
+use pofolio\classes\FMP\Response\ExecutiveCompensation;
 use pofolio\classes\FMP\Response\FinancialStatementSymbolLists;
 use pofolio\classes\FMP\Response\HistoricalPrice;
 use pofolio\classes\FMP\Response\IncomeStatement;
@@ -240,11 +241,6 @@ class FmpApiClient
         return CUSIP::create($this, $CUSIP);
     }
 
-    public function getProfile(string $symbol): Profile
-    {
-        return Profile::create($this, $symbol);
-    }
-
     public function getStockList(): StockList
     {
         return StockList::create($this);
@@ -335,6 +331,16 @@ class FmpApiClient
     public function getExchangeSymbols(string $exchange): ExchangeSymbols
     {
         return ExchangeSymbols::create($this, $exchange);
+    }
+
+    public function getProfile(string $symbol): Profile
+    {
+        return Profile::create($this, $symbol);
+    }
+
+    public function getExecutiveCompensation(string $symbol): ExecutiveCompensation
+    {
+        return ExecutiveCompensation::create($this, symbol: $symbol);
     }
 
     public function getShareFloat(?string $symbol = null): ShareFloat
