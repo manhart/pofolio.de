@@ -632,7 +632,7 @@
 			<column name="lastFloatShares" type="BIGINT" jt="-5" unsigned="y" />
 			<column name="lastOutstandingShares" prior="latestOutstandingShares" type="BIGINT" jt="-5" unsigned="y" />
 			<column name="lastFreeFloat" type="DECIMAL" length="17" decimal="14" jt="3" unsigned="y" />
-			<column name="marketCap" type="DECIMAL" length="17" decimal="0" jt="3" mandatory="y" unsigned="y" />
+			<column name="marketCap" type="DECIMAL" length="17" decimal="0" jt="3" unsigned="y" />
 			<column name="ipoDate" type="DATE" jt="91" />
 			<column name="delistedDate" type="DATE" jt="91" />
 			<column name="updated" prior="modified" type="DATETIME" jt="93" >
