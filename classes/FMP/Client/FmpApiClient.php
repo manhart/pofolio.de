@@ -25,6 +25,7 @@ use pofolio\classes\FMP\Response\DelistedCompanies;
 use pofolio\classes\FMP\Response\EtfList;
 use pofolio\classes\FMP\Response\ExchangeSymbols;
 use pofolio\classes\FMP\Response\ExecutiveCompensation;
+use pofolio\classes\FMP\Response\ExecutiveCompensationBenchmark;
 use pofolio\classes\FMP\Response\FinancialStatementSymbolLists;
 use pofolio\classes\FMP\Response\HistoricalPrice;
 use pofolio\classes\FMP\Response\IncomeStatement;
@@ -341,6 +342,11 @@ class FmpApiClient
     public function getExecutiveCompensation(string $symbol): ExecutiveCompensation
     {
         return ExecutiveCompensation::create($this, symbol: $symbol);
+    }
+
+    public function getExecutiveCompensationBenchmark(int $year): ExecutiveCompensationBenchmark
+    {
+        return ExecutiveCompensationBenchmark::create($this, year: $year);
     }
 
     public function getShareFloat(?string $symbol = null): ShareFloat
