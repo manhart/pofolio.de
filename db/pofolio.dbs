@@ -88,7 +88,7 @@
 			<column name="idStock" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
 			<column name="date" type="DATE" jt="91" mandatory="y" />
 			<column name="idReportedCurrency" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" />
-			<column name="CIK" type="INT" jt="4" >
+			<column name="CIK" type="INT" jt="4" unsigned="y" >
 				<comment><![CDATA[Central Index Key]]></comment>
 			</column>
 			<column name="fillingDate" type="DATE" jt="91" />
@@ -293,6 +293,32 @@
 			<fk name="fk_dividend_stock_0" to_schema="pofolio" to_table="Stock" >
 				<fk_column name="idStock" pk="idStock" />
 			</fk>
+		</table>
+		<table name="EmployeeCount" >
+			<column name="idEmployeeCount" type="BIGINT" jt="-5" mandatory="y" unsigned="y" >
+				<identity><![CDATA[AUTO_INCREMENT]]></identity>
+			</column>
+			<column name="idStock" type="BIGINT" jt="-5" mandatory="y" unsigned="y" />
+			<column name="CIK" type="INT" jt="4" unsigned="y" >
+				<comment><![CDATA[Central Index Key]]></comment>
+			</column>
+			<column name="acceptanceTime" type="DATETIME" jt="93" />
+			<column name="periodOfReport" type="DATE" jt="91" />
+			<column name="formType" type="VARCHAR" length="20" jt="12" />
+			<column name="fillingDate" type="DATE" jt="91" />
+			<column name="employeeCount" type="INT" jt="4" mandatory="y" unsigned="y" />
+			<column name="source" type="VARCHAR" length="1024" jt="12" />
+			<index name="pk_EmployeeCount" unique="PRIMARY_KEY" >
+				<column name="idEmployeeCount" />
+			</index>
+			<index name="ui_EmployeeCount_idStock_fillingDate" unique="UNIQUE_KEY" >
+				<column name="idStock" />
+				<column name="fillingDate" options="DESC" />
+			</index>
+			<fk name="fk_employeecount_stock" to_schema="pofolio" to_table="Stock" >
+				<fk_column name="idStock" pk="idStock" />
+			</fk>
+			<options><![CDATA[engine=InnoDB]]></options>
 		</table>
 		<table name="Exchange" prior="table" >
 			<column name="idExchange" type="MEDIUMINT" jt="4" mandatory="y" unsigned="y" >
@@ -729,6 +755,7 @@
 		<entity schema="pofolio" name="Currency" color="C1D8EE" x="128" y="1216" />
 		<entity schema="pofolio" name="Dividend" color="C1D8EE" x="448" y="496" />
 		<entity schema="pofolio" name="DividendCalendar" color="3986C1" x="448" y="240" />
+		<entity schema="pofolio" name="EmployeeCount" color="C1D8EE" x="992" y="784" />
 		<entity schema="pofolio" name="Exchange" color="C1D8EE" x="80" y="816" />
 		<entity schema="pofolio" name="HistoricalPrice" color="C1D8EE" x="80" y="464" />
 		<entity schema="pofolio" name="IncomeStatement" color="C1D8EE" x="48" y="1472" />
