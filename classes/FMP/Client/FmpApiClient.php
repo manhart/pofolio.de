@@ -28,6 +28,7 @@ use pofolio\classes\FMP\Response\ExchangeSymbols;
 use pofolio\classes\FMP\Response\ExecutiveCompensation;
 use pofolio\classes\FMP\Response\ExecutiveCompensationBenchmark;
 use pofolio\classes\FMP\Response\FinancialStatementSymbolLists;
+use pofolio\classes\FMP\Response\HistoricalEmployeeCount;
 use pofolio\classes\FMP\Response\HistoricalPrice;
 use pofolio\classes\FMP\Response\IncomeStatement;
 use pofolio\classes\FMP\Response\PriceTarget;
@@ -353,6 +354,11 @@ class FmpApiClient
     public function getCompanyNotes(string $symbol): CompanyNotes
     {
         return CompanyNotes::create($this, symbol: $symbol);
+    }
+
+    public function getHistoricalEmployeeCount(string $symbol): HistoricalEmployeeCount
+    {
+        return HistoricalEmployeeCount::create($this, symbol: $symbol);
     }
 
     public function getShareFloat(?string $symbol = null): ShareFloat
