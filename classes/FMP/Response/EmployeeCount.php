@@ -10,7 +10,7 @@
 
 namespace pofolio\classes\FMP\Response;
 
-class HistoricalEmployeeCount extends Response
+class EmployeeCount extends Response
 {
     protected static string $url = 'v4/historical/employee_count';
 
