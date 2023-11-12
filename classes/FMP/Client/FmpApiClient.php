@@ -23,12 +23,12 @@ use pofolio\classes\FMP\Response\CompanyCoreInformation;
 use pofolio\classes\FMP\Response\CompanyNotes;
 use pofolio\classes\FMP\Response\CUSIP;
 use pofolio\classes\FMP\Response\DelistedCompanies;
-use pofolio\classes\FMP\Response\EmployeeCount;
 use pofolio\classes\FMP\Response\EtfList;
 use pofolio\classes\FMP\Response\ExchangeSymbols;
 use pofolio\classes\FMP\Response\ExecutiveCompensation;
 use pofolio\classes\FMP\Response\ExecutiveCompensationBenchmark;
 use pofolio\classes\FMP\Response\FinancialStatementSymbolLists;
+use pofolio\classes\FMP\Response\HistoricalEmployeeCount;
 use pofolio\classes\FMP\Response\HistoricalPrice;
 use pofolio\classes\FMP\Response\IncomeStatement;
 use pofolio\classes\FMP\Response\PriceTarget;
@@ -356,9 +356,9 @@ class FmpApiClient
         return CompanyNotes::create($this, symbol: $symbol);
     }
 
-    public function getEmployeeCount(string $symbol): EmployeeCount
+    public function getHistoricalEmployeeCount(string $symbol): HistoricalEmployeeCount
     {
-        return EmployeeCount::create($this, symbol: $symbol);
+        return HistoricalEmployeeCount::create($this, symbol: $symbol);
     }
 
     public function getShareFloat(?string $symbol = null): ShareFloat

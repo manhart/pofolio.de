@@ -10,7 +10,7 @@
 
 namespace pofolio\classes\FMP\Response;
 
-class EmployeeCount extends Response
+class HistoricalEmployeeCount extends Response
 {
     protected static string $url = 'v4/historical/employee_count';
 
@@ -49,9 +49,9 @@ class EmployeeCount extends Response
         return $this->getResponseValueAsString('formType');
     }
 
-    public function getFillingDate(): \DateTimeInterface
+    public function getFilingDate(): \DateTimeInterface
     {
-        return $this->getResponseValueAsDate('fillingDate');
+        return $this->getResponseValueAsDate('filingDate');
     }
 
     public function getEmployeeCount(): int
