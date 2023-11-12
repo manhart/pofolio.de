@@ -19,6 +19,7 @@ use pofolio\dao\mysql\pofolio\Country;
 use pofolio\dao\mysql\pofolio\Currency;
 use pofolio\dao\mysql\pofolio\Dividend;
 use pofolio\dao\mysql\pofolio\DividendCalendar;
+use pofolio\dao\mysql\pofolio\EmployeeCount;
 use pofolio\dao\mysql\pofolio\Exchange;
 use pofolio\dao\mysql\pofolio\HistoricalPrice;
 use pofolio\dao\mysql\pofolio\IncomeStatement;
@@ -88,12 +89,12 @@ $stockTypes = $StockDAO->getColumnEnumValues('type');
 $client = FmpApiClient::getInstance();
 
 /*
-$search = $client->getExchangeSymbols('NASDAQ');
+$search = $client->getEmployeeCount('AAPL');
 //$search->dump();
 while($search->valid()) {
     echo 'Symbol: '.$search->getSymbol().LINE_BREAK;
-    echo 'Name: '.$search->getName().LINE_BREAK;
-    echo 'Price: '.$search->getPrice().LINE_BREAK;
+    echo 'Title: '.$search->getEmployeeCount().LINE_BREAK;
+    echo 'Exchange: '.$search->getAcceptanceTime()->format('d.m.Y H:i:s').LINE_BREAK;
     $search->next();
 }
 echo 'Num results: '.count($search).LINE_BREAK;
@@ -128,7 +129,7 @@ $symbols = array_unique(['ALRM', 'UMI.BR', 'TNC', 'CRM', 'TEVA.TA', 'MBB.DE', 'K
     'SAM', 'PAYX', 'ECV.DE', 'WPM', 'META', 'SIE.DE', 'INVE-A.ST', 'INVE-B.ST', 'JKHY', 'PSTG', 'MUV2.DE', 'SALM.OL', 'INFY.NS', 'GOOGL', 'MTX.DE',
     'ATS.VI', 'FDS', 'NXU.DE', 'ADSK', 'AAD.DE', 'BC8.DE', 'MDO.DE', 'ANET', 'EVD.DE', 'ZS', 'CMG', 'MSFT', 'ADBE', 'NVO', 'NOVO-B.CO', 'NOVC.DE',
     'DMRE.DE', 'KTN.DE', 'TTD', 'NVDA', 'AMZN', '9618.HK', 'IFF', 'ACC.OL', 'ROKU', 'KLG', 'ESTC', 'FRE.DE', 'QCOM', 'KGX.DE', '1177.HK', 'OSP2.DE',
-    'VOW.DE', 'VOW3.DE', '9988.HK', 'BABA', 'MTCH', 'BBZA.DE', 'BION.SW', 'NNND.F', '0700.HK', 'GSHD', 'CTM.F', 'KEYS', 'EFX', 'LXH', 'AUTO.OL', 'PFE',
+    'VOW.DE', 'VOW3.DE', '9988.HK', 'BABA', 'MTCH', 'BBZA.DE', 'BION.SW', 'NNND.F', '0700.HK', 'GSHD', 'CTM.F', 'KEYS', 'EFX', 'LHX', 'AUTO.OL', 'PFE',
     'BAYN.DE', 'PYPL', 'SSTK', 'DIS', 'NDX1.DE', 'YAR.OL', 'U', 'KNEBV.HE', 'T', 'ADN1.DE', 'SYF', 'BMY', 'PUM.DE', 'AGCO', 'P911.HM', 'PAH3.DE', 'P911.DE',
     'BAS.DE', 'GS7.DE', 'K', 'BMT.DE', 'MARR.MI', 'TSN', '2GB.DE', 'MDT', 'SWK', 'MMM', 'CMC', 'ABI.BR', '1NBA.DE', 'FPE.DE', 'MOL.BD', 'MYTAY', 'AEM.TO',
     'LVS', '7309.T', 'VVSM.DE', 'IBKR', 'ST5.DE', 'HEN.DE', 'HEN3.DE', '1TY.DE', 'NVJP.DE', 'DOCN', 'NGLB.DE', 'AAL.L', 'GSF.OL', 'B1C.F', '9888.HK',
@@ -136,6 +137,7 @@ $symbols = array_unique(['ALRM', 'UMI.BR', 'TNC', 'CRM', 'TEVA.TA', 'MBB.DE', 'K
 
 //$symbols = ['TTD'];
 
+$errors = [];
 foreach($symbols as $symbol) {
     try {
         stockImporter($client, $symbol);
@@ -148,9 +150,12 @@ foreach($symbols as $symbol) {
         balanceSheetStatementImporter($client, $symbol);
         cashflowStatementImporter($client, $symbol);
         splitImporter($client, $symbol);
+        employeeImporter($client, $symbol);
     }
     catch(RuntimeException $e) {
         echo $e->getMessage().LINE_BREAK;
+        sleep(30);
+        $errors[] = $e->getMessage();
         continue;
     }
 }
@@ -164,6 +169,14 @@ dividendCalendarImporter($client, new \DateTime('+4 month'), new \DateTime('+6 m
 splitCalendarImporter($client, new \DateTime('-1 month'), new \DateTime('+2 month'));
 splitCalendarImporter($client, new \DateTime('+2 month'), new \DateTime('+4 month'));
 splitCalendarImporter($client, new \DateTime('+4 month'), new \DateTime('+6 month'));
+
+// dump errors
+if($errors) {
+    echo 'Errors: '.LINE_BREAK;
+    foreach($errors as $error) {
+        echo $error.LINE_BREAK;
+    }
+}
 die();
 $stockList = $client->getStockList();
 
@@ -543,6 +556,35 @@ function splitImporter(FmpApiClient $client, int|string $symbol): void
 
         if(!$SplitDAO->exists($idStock, $stockSplit->getDate())) {
             $recordSet = $SplitDAO->insert($dividendData);
+            if($lastError = $recordSet->getLastError()) {
+                throw new RuntimeException($lastError['message'], $lastError['code']);
+            }
+        }
+    }
+}
+
+function employeeImporter(FmpApiClient $client, int|string $symbol): void
+{
+    [$idStock, $symbol] = extractSymbol($symbol);
+
+    $employeeCountDAO = EmployeeCount::create();
+    $employeeCount = $client->getHistoricalEmployeeCount($symbol);
+    echo 'EmployeeCount for: '.$symbol.LINE_BREAK;
+    $employeeCount->dump();
+
+    foreach($employeeCount as $ignored) {
+        $employeeCountData = [
+            'idStock' => $idStock,
+            'acceptanceTime' => $employeeCount->getAcceptanceTime(),
+            'periodOfReport' => $employeeCount->getPeriodOfReport(),
+            'formType' => $employeeCount->getFormType(),
+            'filingDate' => $employeeCount->getFilingDate(),
+            'employeeCount' => $employeeCount->getEmployeeCount(),
+            'source' => $employeeCount->getSource(),
+        ];
+
+        if(!$employeeCountDAO->exists($idStock, $employeeCount->getFilingDate())) {
+            $recordSet = $employeeCountDAO->insert($employeeCountData);
             if($lastError = $recordSet->getLastError()) {
                 throw new RuntimeException($lastError['message'], $lastError['code']);
             }
