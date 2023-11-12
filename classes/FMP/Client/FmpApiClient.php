@@ -20,6 +20,7 @@ use pofolio\classes\FMP\Response\CIKList;
 use pofolio\classes\FMP\Response\CIKSearch;
 use pofolio\classes\FMP\Response\CommitmentOfTradersReportList;
 use pofolio\classes\FMP\Response\CompanyCoreInformation;
+use pofolio\classes\FMP\Response\CompanyNotes;
 use pofolio\classes\FMP\Response\CUSIP;
 use pofolio\classes\FMP\Response\DelistedCompanies;
 use pofolio\classes\FMP\Response\EtfList;
@@ -347,6 +348,11 @@ class FmpApiClient
     public function getExecutiveCompensationBenchmark(int $year): ExecutiveCompensationBenchmark
     {
         return ExecutiveCompensationBenchmark::create($this, year: $year);
+    }
+
+    public function getCompanyNotes(string $symbol): CompanyNotes
+    {
+        return CompanyNotes::create($this, symbol: $symbol);
     }
 
     public function getShareFloat(?string $symbol = null): ShareFloat
