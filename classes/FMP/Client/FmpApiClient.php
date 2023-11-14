@@ -29,6 +29,7 @@ use pofolio\classes\FMP\Response\ExchangeSymbols;
 use pofolio\classes\FMP\Response\ExecutiveCompensation;
 use pofolio\classes\FMP\Response\ExecutiveCompensationBenchmark;
 use pofolio\classes\FMP\Response\FinancialStatementSymbolLists;
+use pofolio\classes\FMP\Response\Grade;
 use pofolio\classes\FMP\Response\HistoricalEmployeeCount;
 use pofolio\classes\FMP\Response\HistoricalPrice;
 use pofolio\classes\FMP\Response\IncomeStatement;
@@ -381,6 +382,11 @@ class FmpApiClient
     public function getStockScreener(...$params): StockScreener
     {
         return StockScreener::create($this, ...$params);
+    }
+
+    public function getGrade(string $symbol, ?int $limit = null): Grade
+    {
+        return Grade::create($this, $symbol, limit: $limit);
     }
 
     public function getShareFloat(?string $symbol = null): ShareFloat
