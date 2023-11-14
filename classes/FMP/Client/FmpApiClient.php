@@ -43,6 +43,7 @@ use pofolio\classes\FMP\Response\ShareFloat;
 use pofolio\classes\FMP\Response\StockDividend;
 use pofolio\classes\FMP\Response\StockDividendCalendar;
 use pofolio\classes\FMP\Response\StockList;
+use pofolio\classes\FMP\Response\StockScreener;
 use pofolio\classes\FMP\Response\StockSplit;
 use pofolio\classes\FMP\Response\StockSplitCalendar;
 use pofolio\classes\FMP\Response\SymbolChange;
@@ -365,6 +366,21 @@ class FmpApiClient
     public function getEmployeeCount(string $symbol): EmployeeCount
     {
         return EmployeeCount::create($this, symbol: $symbol);
+    }
+
+    /**
+     * Find stocks that meet your investment criteria with our Screener (Stock) endpoint. This endpoint allows you to search for stocks based on various
+     * criteria, such as market cap, price, volume, beta, sector, and country.
+     *
+     * @param ...$params
+     *
+     * @return StockScreener
+     * @throws ResponseException
+     * @link https://site.financialmodelingprep.com/developer/docs#screener-stock-company-information
+     */
+    public function getStockScreener(...$params): StockScreener
+    {
+        return StockScreener::create($this, ...$params);
     }
 
     public function getShareFloat(?string $symbol = null): ShareFloat
