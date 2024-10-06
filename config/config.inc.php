@@ -54,11 +54,6 @@ $SQL_Host ??= $_SERVER['_SQL_Host'] ??
 $stage ??= Stage::fromString($_SERVER['_Stage'] ?? 'production');
 $defaultSessionDuration ??= $_SERVER['_DefaultSessionDuration'] ?? 1800;
 
-// check if we are in command line mode
-if(!defined('IS_CLI')) {
-    define('IS_CLI', PHP_SAPI === 'cli');
-}
-
 //export to constants
 define('DIR_DOCUMENT_ROOT', $baseNamespacePath);
 define('DIR_RELATIVE_DOCUMENT_ROOT', $relativeRoot);
@@ -71,8 +66,6 @@ define('IS_PRODUCTION', $stage === Stage::production);
 define('DEFAULT_SESSION_LIFETIME', $defaultSessionDuration);
 const IS_TESTSERVER = (IS_DEVELOP || IS_STAGING);
 const DIR_DAOS_ROOT = DIR_DOCUMENT_ROOT . '/daos';
-// Pool
-const DIR_POOL_ROOT = DIR_DOCUMENT_ROOT . '/pool';
 // Data and Resources
 const DIR_DATA_ROOT = DIR_DOCUMENT_ROOT . '/data';
 const DIR_RELATIVE_DATA_ROOT = DIR_RELATIVE_DOCUMENT_ROOT . '/data';
