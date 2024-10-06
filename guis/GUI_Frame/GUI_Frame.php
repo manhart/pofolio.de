@@ -10,7 +10,7 @@
 
 namespace pofolio\guis\GUI_Frame;
 
-use GUI_CustomFrame;
+use pool\classes\GUI\Builtin\GUI_CustomFrame;
 use pool\includes\Resources;
 
 class GUI_Frame extends GUI_CustomFrame
@@ -26,7 +26,7 @@ class GUI_Frame extends GUI_CustomFrame
     /**
      * Templates laden
      */
-    public function loadFiles()
+    public function loadFiles(): static
     {
         parent::loadFiles();
 
@@ -76,6 +76,7 @@ class GUI_Frame extends GUI_CustomFrame
 
         $appJS = $this->Weblication->findJavaScript('app.js');
         $this->addScriptFileAtTheEnd($appJS);
+        return $this;
     }
 
     /**

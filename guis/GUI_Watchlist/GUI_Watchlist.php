@@ -14,12 +14,13 @@ namespace pofolio\guis\GUI_WatchList;
 use pofolio\classes\FMP\Client\FmpApiClient;
 use pofolio\dao\mysql\pofolio\Stock;
 use pool\classes\Core\Input\Input;
+use pool\classes\GUI\GUI_Module;
 
 /**
  * Class GUI_Watchlist
  * @package pofolio
  */
-class GUI_Watchlist extends \GUI_Module
+class GUI_Watchlist extends GUI_Module
 {
     /**
      * @var array<string, string> $templates files (templates) to be loaded, usually used with $this->Template->setVar(...) in the prepare function. Defined as an associated array [handle => tplFile].

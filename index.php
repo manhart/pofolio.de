@@ -10,19 +10,16 @@
 namespace pofolio;
 
 // global location for the configuration files
-$_SERVER['_BaseNamespacePath'] = '/virtualweb/manhart';
+ $_SERVER['_BaseNamespacePath'] = '/virtualweb/manhart';
 const DIR_CONFIGS_ROOT = __DIR__.'/config';
 require_once DIR_CONFIGS_ROOT.'/config.inc.php'; // <-- innerhalb config.inc.php die Pfade anpassen!
+require_once '../pool/pool.lib.php';
 require_once DIR_3RDPARTY_ROOT.'/_3rdPartyResources.php';
 
-// global POOL
-require_once DIR_POOL_ROOT.'/pool.lib.php';
 
 use Exception;
 use pofolio\classes\PofolioApp;
 use pofolio\guis\GUI_Frame\GUI_Frame;
-use pool\classes\Core\Weblication;
-use pool\classes\Database\DataInterface;
 
 $App = PofolioApp::getInstance();
 //$App->addDataInterface($MariaDB);
